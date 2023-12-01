@@ -39,16 +39,28 @@ namespace FMath
             this.scaledValue = scaledValue;
         }
 
+        /// <summary>
+        /// 使用 int 类型构造定点数
+        /// </summary>
+        /// <param name="value"></param>
         public FFloat(int value)
         {
             scaledValue = value * MULTIPLER_FACTOR;
         }
 
+        /// <summary>
+        /// 使用 float 类型构造定点数
+        /// </summary>
+        /// <param name="value"></param>
         public FFloat(float value)
         {
             scaledValue = (long)Math.Round(value * MULTIPLER_FACTOR);
         }
 
+        /// <summary>
+        /// 使用 double 类型构造定点数
+        /// </summary>
+        /// <param name="value"></param>
         public FFloat(double value)
         {
             scaledValue = (long)Math.Round(value * MULTIPLER_FACTOR);
@@ -87,41 +99,88 @@ namespace FMath
         }
 
         #region 运算符重载
+        /// <summary>
+        /// 定点数取反
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static FFloat operator -(FFloat value)
         {
             return new FFloat(-value.scaledValue);
         }
 
+        /// <summary>
+        /// 判断等于
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator ==(FFloat left, FFloat right)
         {
             return left.scaledValue == right.scaledValue;
         }
 
+        /// <summary>
+        /// 判断不等于
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator !=(FFloat left, FFloat right)
         {
             return left.scaledValue != right.scaledValue;
         }
 
+        /// <summary>
+        /// 判断大于
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator >(FFloat left, FFloat right)
         {
             return left.scaledValue > right.scaledValue;
         }
 
+        /// <summary>
+        /// 判断小与
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator <(FFloat left, FFloat right)
         {
             return left.scaledValue < right.scaledValue;
         }
 
+        /// <summary>
+        /// 判断大于等于
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator >=(FFloat left, FFloat right)
         {
             return left.scaledValue >= right.scaledValue;
         }
 
+        /// <summary>
+        /// 判断小于等于
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator <=(FFloat left, FFloat right)
         {
             return left.scaledValue <= right.scaledValue;
         }
 
+        /// <summary>
+        /// 定点数右移
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bitMoveCount"></param>
+        /// <returns></returns>
         public static FFloat operator >>(FFloat value, int bitMoveCount)
         {
             if(value.scaledValue >= 0)
@@ -130,21 +189,45 @@ namespace FMath
                 return new FFloat(-(-value.scaledValue) >> bitMoveCount);
         }
 
+        /// <summary>
+        /// 定点数左移
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="bitMoveCount"></param>
+        /// <returns></returns>
         public static FFloat operator <<(FFloat value, int bitMoveCount)
         {
             return new FFloat(value.scaledValue << bitMoveCount);
         }
 
+        /// <summary>
+        /// 定点数加法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static FFloat operator +(FFloat left, FFloat right)
         {
             return new FFloat(left.scaledValue + right.scaledValue);
         }
 
+        /// <summary>
+        /// 定点数减法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static FFloat operator -(FFloat left, FFloat right)
         {
             return new FFloat(left.scaledValue - right.scaledValue);
         }
 
+        /// <summary>
+        /// 定点数乘法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static FFloat operator *(FFloat left, FFloat right)
         {
             //因为使用缩放后的值进行乘法会导致多乘一个倍数，所以这里要再缩小一次倍数
@@ -157,6 +240,13 @@ namespace FMath
             return new FFloat(value);
         }
 
+        /// <summary>
+        /// 定点数除法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        /// <exception cref="DivideByZeroException"></exception>
         public static FFloat operator /(FFloat left, FFloat right)
         {
             //因为使用缩放后的值进行除法会导致多除一个倍数，所以这里要再放大一次倍数
@@ -196,6 +286,11 @@ namespace FMath
         }
         #endregion
 
+        /// <summary>
+        /// 判断对象是否相等
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
@@ -205,11 +300,19 @@ namespace FMath
             return false;
         }
 
+        /// <summary>
+        /// 返回这个对象的 HashCode
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return scaledValue.GetHashCode();
         }
 
+        /// <summary>
+        /// 返回对象的 double 值的字符串
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return this.Double.ToString();
@@ -217,39 +320,27 @@ namespace FMath
 
         #region 打印定点数的真实值
         /// <summary>
-        /// 打印 int 类型的值
+        /// int 类型的值
         /// </summary>
-        public void DumpInt()
+        public string DumpInt()
         {
-#if UNITY_EDITOR
-            UnityEngine.Debug.Log(Int.ToString());
-#else
-            Console.WriteLine(Int.ToString());
-#endif
+            return Int.ToString();
         }
 
         /// <summary>
-        /// 打印 float 类型的值
+        /// float 类型的值
         /// </summary>
-        public void DumpFloat()
+        public string DumpFloat()
         {
-#if UNITY_EDITOR
-            UnityEngine.Debug.Log(Float.ToString());
-#else
-            Console.WriteLine(Float.ToString());
-#endif
+            return Float.ToString();
         }
 
         /// <summary>
-        /// 打印 double 类型的值
+        /// double 类型的值
         /// </summary>
-        public void DumpDouble()
+        public string DumpDouble()
         {
-#if UNITY_EDITOR
-            UnityEngine.Debug.Log(Double.ToString());
-#else
-            Console.WriteLine(Double.ToString());
-#endif
+            return Double.ToString();
         }
         #endregion
     }

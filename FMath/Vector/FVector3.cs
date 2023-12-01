@@ -47,10 +47,25 @@ namespace FMath.Vector
         public static FVector3 Down { get { return new FVector3(0, -1, 0); } }
         #endregion
 
+        /// <summary>
+        /// 向量 x 轴的值
+        /// </summary>
         public FFloat x;
+        /// <summary>
+        /// 向量 y 轴的值
+        /// </summary>
         public FFloat y;
+        /// <summary>
+        /// 向量 z 轴的值
+        /// </summary>
         public FFloat z;
 
+        /// <summary>
+        /// 使用定点数构造定点向量
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
         public FVector3(FFloat x, FFloat y, FFloat z)
         {
             this.x = x;
@@ -59,6 +74,10 @@ namespace FMath.Vector
         }
 
 #if UNITY
+        /// <summary>
+        /// 使用 unity 的 vector3 类型构造定点向量
+        /// </summary>
+        /// <param name="vector3"></param>
         public FVector3(Vector3 vector3)
         {
             this.x = new FFloat(vector3.x);
@@ -67,7 +86,7 @@ namespace FMath.Vector
         }
 
         /// <summary>
-        /// 转换为对应的Unity中的向量对象
+        /// 返回 unity 的向量对象
         /// </summary>
         public Vector3 Vector3
         {
@@ -87,6 +106,11 @@ namespace FMath.Vector
             return new long[] { x.ScaledValue, y.ScaledValue, z.ScaledValue };
         }
 
+        /// <summary>
+        /// 判断对象是否相等
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
@@ -99,11 +123,19 @@ namespace FMath.Vector
             return false;
         }
 
+        /// <summary>
+        /// 返回这个对象的 HashCode
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode();
         }
 
+        /// <summary>
+        /// 返回对象的 x、y 和 z 轴值的字符串
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"({x},{y},{z})";
