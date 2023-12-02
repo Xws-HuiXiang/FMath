@@ -125,6 +125,61 @@ namespace FixedMath.Vector
         /// 向量长度
         /// </summary>
         public FFloat Magnitude { get { return FMath.Sqrt(this.sqrMagnitude); } }
+
+        /// <summary>
+        /// 返回当前向量的单位向量
+        /// </summary>
+        public FVector3 normalized
+        {
+            get
+            {
+                if (this.Magnitude > 0)
+                {
+                    FFloat rate = FFloat.One / this.Magnitude;
+
+                    return new FVector3(x * rate, y * rate, z * rate);
+                }
+                else
+                {
+                    return FVector3.Zero;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 将当前向量转换为单位向量
+        /// </summary>
+        public void Normalize()
+        {
+            if(this.Magnitude > 0)
+            {
+                FFloat rate = FFloat.One / this.Magnitude;
+
+                x *= rate;
+                y *= rate;
+                z *= rate;
+            }
+        }
+
+        /// <summary>
+        /// 计算指定向量的单位向量
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public static FVector3 Normalize(FVector3 vector)
+        {
+            if (vector.Magnitude > 0)
+            {
+                FFloat rate = FFloat.One / vector.Magnitude;
+
+                return new FVector3(vector.x * rate, vector.y * rate, vector.z * rate);
+            }
+            else
+            {
+                return FVector3.Zero;
+            }
+        }
+
         #region 运算符重载
         /// <summary>
         /// 向量加法
