@@ -180,6 +180,44 @@ namespace FixedMath.Vector
             }
         }
 
+        /// <summary>
+        /// 向量点乘。结果大于0则两向量夹角小与90度；等于0则两个向量互相垂直；小与0则两向量加角在90~180度之间
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FFloat Dot(FVector3 left, FVector3 right)
+        {
+            return left.x * right.x + left.y * right.y + left.z * right.z;
+        }
+
+        /// <summary>
+        /// 向量叉乘。结果为两个向量所在平面的法线向量（方向为右手法则确定）
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector3 Cross(FVector3 left, FVector3 right)
+        {
+            return new FVector3(left.y * right.z - left.z * right.y, left.z * right.x - left.x * right.z, left.x * right.y - left.y * right.x);
+        }
+
+        /// <summary>
+        /// 计算两向量夹角
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public static FFloat Angle(FVector3 from, FVector3 to)
+        {
+            FFloat mod = from.Magnitude * to.Magnitude;
+            if (mod == 0) return FFloat.Zero;
+            FFloat dot = Dot(from, to);
+            //反余弦函数
+
+            return 0;
+        }
+
         #region 运算符重载
         /// <summary>
         /// 向量加法

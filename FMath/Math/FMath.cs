@@ -35,5 +35,15 @@ namespace FixedMath
 
             return result;
         }
+
+        /// <summary>
+        /// 反余弦函数
+        /// </summary>
+        /// <param name="angle"></param>
+        /// <returns></returns>
+        public static FFloat Acos(FFloat angle)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
