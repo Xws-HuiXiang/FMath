@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 #endif
 
-namespace FMath.Vector
+namespace FixedMath.Vector
 {
     /// <summary>
     /// 定点数使用的三维向量
@@ -105,6 +105,138 @@ namespace FMath.Vector
         {
             return new long[] { x.ScaledValue, y.ScaledValue, z.ScaledValue };
         }
+
+        /// <summary>
+        /// 向量长度的平方
+        /// </summary>
+        public FFloat sqrMagnitude { get { return x * x + y * y + z * z; } }
+
+        /// <summary>
+        /// 计算向量长度的平方
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public static FFloat SqrMagnitude(FVector3 vector)
+        {
+            return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+        }
+
+        /// <summary>
+        /// 向量长度
+        /// </summary>
+        public FFloat Magnitude { get { return FMath.Sqrt(this.sqrMagnitude); } }
+        #region 运算符重载
+        /// <summary>
+        /// 向量加法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector3 operator +(FVector3 left, FVector3 right)
+        {
+            FFloat x = left.x + right.x;
+            FFloat y = left.y + right.y;
+            FFloat z = left.z + right.z;
+
+            return new FVector3(x, y, z);
+        }
+
+        /// <summary>
+        /// 向量减法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector3 operator -(FVector3 left, FVector3 right)
+        {
+            FFloat x = left.x - right.x;
+            FFloat y = left.y - right.y;
+            FFloat z = left.z - right.z;
+
+            return new FVector3(x, y, z);
+        }
+
+        /// <summary>
+        /// 向量乘法
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="left"></param>
+        /// <returns></returns>
+        public static FVector3 operator *(FVector3 left, FFloat value)
+        {
+            FFloat x = left.x * value;
+            FFloat y = left.y * value;
+            FFloat z = left.z * value;
+
+            return new FVector3(x, y, z);
+        }
+
+        /// <summary>
+        /// 向量乘法
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="left"></param>
+        /// <returns></returns>
+        public static FVector3 operator *(FFloat value, FVector3 left)
+        {
+            FFloat x = value * left.x;
+            FFloat y = value * left.y;
+            FFloat z = value * left.z;
+
+            return new FVector3(x, y, z);
+        }
+
+        /// <summary>
+        /// 向量除法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FVector3 operator /(FVector3 left, FFloat value)
+        {
+            FFloat x = left.x / value;
+            FFloat y = left.y / value;
+            FFloat z = left.z / value;
+
+            return new FVector3(x, y, z);
+        }
+
+        /// <summary>
+        /// 向量值取反
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public static FVector3 operator -(FVector3 vector)
+        {
+            FFloat x = -vector.x;
+            FFloat y = -vector.y;
+            FFloat z = -vector.z;
+
+            return new FVector3(x, y, z);
+        }
+
+        /// <summary>
+        /// 判断向量相等
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool operator ==(FVector3 left, FVector3 right)
+        {
+            return left.x == right.x && left.y == right.y && left.z == right.z;
+        }
+
+        /// <summary>
+        /// 判断向量不等
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool operator !=(FVector3 left, FVector3 right)
+        {
+            return left.x != right.x || left.y != right.y || left.z != right.z;
+        }
+        #endregion
 
         /// <summary>
         /// 判断对象是否相等

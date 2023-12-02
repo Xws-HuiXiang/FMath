@@ -1,4 +1,4 @@
-﻿using FMath;
+﻿using FixedMath;
 
 namespace Example
 {
@@ -28,6 +28,9 @@ namespace Example
             Console.WriteLine($"{v1} >= {v2} ? {v1 >= v2}");
             Console.WriteLine($"{v1} == {v2} ? {v1 == v2}");
             Console.WriteLine($"{v1} != {v2} ? {v1 != v2}");
+            //定点数向量
+            //数学库
+            Console.WriteLine($"3 Sqrt -> {FMath.Sqrt(3)}");
 
             Console.ReadLine();
         }

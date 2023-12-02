@@ -2,13 +2,22 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FMath
+namespace FixedMath
 {
     /// <summary>
     /// float 类型对应的定点数类型
     /// </summary>
     public struct FFloat
     {
+        /// <summary>
+        /// 定点数 0
+        /// </summary>
+        public static readonly FFloat Zero = new FFloat(0);
+        /// <summary>
+        /// 定点数 1
+        /// </summary>
+        public static readonly FFloat One = new FFloat(1);
+
         /// <summary>
         /// 扩大数值的左移位数。值越大精度越高
         /// <para>定点数实现核心为扩大扩大浮点数的值，这个值即为原本数值左移的位数</para>
