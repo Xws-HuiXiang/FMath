@@ -9,6 +9,7 @@ namespace GenerateTable
             HandleInput.Init();
 
             Console.WriteLine("欢迎使用三角函数值生成程序");
+            Console.WriteLine("程序运行的结果将直接写入剪切板中");
             Console.WriteLine("任何情况下，输入“quit”将退出程序。输入“back”将返回上一步");
 
             string? input = Console.ReadLine();
