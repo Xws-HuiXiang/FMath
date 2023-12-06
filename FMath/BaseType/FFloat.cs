@@ -21,9 +21,9 @@ namespace FixedMath
         /// <summary>
         /// 扩大数值的左移位数。值越大精度越高
         /// <para>定点数实现核心为扩大扩大浮点数的值，这个值即为原本数值左移的位数</para>
-        /// <para>默认为10即左移10位，数值将扩大1024（2的10次方）倍</para>
+        /// <para>默认为12即左移12位，数值将扩大4096（2的12次方）倍</para>
         /// </summary>
-        public static UInt16 BitMoveCount { get; set; } = 10;
+        public static UInt16 BitMoveCount { get; set; } = 12;
         /// <summary>
         /// 扩大数值的倍数
         /// </summary>
@@ -104,6 +104,30 @@ namespace FixedMath
                     return (int)(scaledValue >> BitMoveCount);
                 else
                     return -(int)(-scaledValue >> BitMoveCount);
+            }
+        }
+
+        /// <summary>
+        /// 取整数。使用IEEE规范，为“四舍六入五取偶”
+        /// </summary>
+        public readonly int RoundToInt
+        {
+            get
+            {
+                float f = this.Float;
+                int fv = (int)f;
+                f -= fv;
+                if (f >= 0.6f)
+                    return fv + 1;
+                else if (f < 0.5f)
+                    return fv;
+                else
+                {
+                    if (fv % 2 == 0)
+                        return fv;
+                    else
+                        return fv + 1;
+                }
             }
         }
 
