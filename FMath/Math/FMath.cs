@@ -98,18 +98,47 @@ namespace FixedMath
         {
             //处理角度在0~360度之间
             //需要优先处理，因为定点数计算数字越大误差越大
-            if (angle > 0)
-            {
-                while (angle >= FMath.PI2Angle)
-                    angle -= FMath.PI2Angle;
-            }
-            else if (angle < 0)
-            {
-                while (angle <= FMath.PI2Angle)
-                    angle += FMath.PI2Angle;
-            }
+            angle = ClampEulerAngle360(angle);
 
             return Sin(angle * FMath.Deg2Rad);
+        }
+
+        /// <summary>
+        /// 余弦函数
+        /// </summary>
+        /// <param name="radian"></param>
+        /// <returns></returns>
+        public static FFloat Cos(FFloat radian)
+        {
+            //处理弧度值在0~2PI范围内
+            FFloat value = radian / PI2;
+            radian -= PI2 * value.Int;
+            //处理负值
+            if (radian < 0)
+                radian += PI2;
+            //将 radian 重映射到[0 ~ TotalCount]作为数组索引
+            FFloat index = (radian / PI2) * FMathTable.CosTable.Length;
+            //钳制索引在数组范围内
+            index = FMath.Clamp(index, 0, FMathTable.CosTable.Length - 1);
+            FFloat v = FMathTable.CosTable[index.RoundToInt];
+
+            v /= FMathTable.SCALE;
+
+            return v;
+        }
+
+        /// <summary>
+        /// 余弦函数
+        /// </summary>
+        /// <param name="angle"></param>
+        /// <returns></returns>
+        public static FFloat CosAngle(FFloat angle)
+        {
+            //处理角度在0~360度之间
+            //需要优先处理，因为定点数计算数字越大误差越大
+            angle = ClampEulerAngle360(angle);
+
+            return Cos(angle * FMath.Deg2Rad);
         }
 
         /// <summary>
@@ -137,6 +166,27 @@ namespace FixedMath
                 return max;
 
             return input;
+        }
+
+        /// <summary>
+        /// 以 2π 为周期，钳制输入角度到（0~360）度之间
+        /// </summary>
+        /// <param name="angle">欧拉角</param>
+        /// <returns></returns>
+        public static FFloat ClampEulerAngle360(FFloat angle)
+        {
+            if (angle > 0)
+            {
+                while (angle >= FMath.PI2Angle)
+                    angle -= FMath.PI2Angle;
+            }
+            else if (angle < 0)
+            {
+                while (angle < 0)
+                    angle += FMath.PI2Angle;
+            }
+
+            return angle;
         }
     }
 }
