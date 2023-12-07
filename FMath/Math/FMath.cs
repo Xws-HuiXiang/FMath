@@ -6,9 +6,6 @@ namespace FixedMath
 {
     /// <summary>
     /// 定点数使用的数学运算
-    /// <para>
-    /// 区域重映射数学模型：https://blog.csdn.net/Touch_Dream/article/details/62076236
-    /// </para>
     /// </summary>
     public static class FMath
     {
@@ -208,11 +205,31 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 反正弦函数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat Asin(FFloat value)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// 反余弦函数
         /// </summary>
-        /// <param name="angle"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
-        public static FFloat Acos(FFloat angle)
+        public static FFloat Acos(FFloat value)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 反正切函数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat Atan(FFloat value)
         {
             throw new NotImplementedException();
         }
