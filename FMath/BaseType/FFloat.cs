@@ -38,6 +38,14 @@ namespace FixedMath
             get { return scaledValue; }
             set { scaledValue = value; }
         }
+        private long rawValue;
+        /// <summary>
+        /// 真实值
+        /// </summary>
+        public long RawValue
+        {
+            get { return rawValue; }
+        }
 
         /// <summary>
         /// 内部使用的构造函数
@@ -46,6 +54,7 @@ namespace FixedMath
         private FFloat(long scaledValue)
         {
             this.scaledValue = scaledValue;
+            this.rawValue = scaledValue / MULTIPLER_FACTOR;
         }
 
         /// <summary>
@@ -54,6 +63,7 @@ namespace FixedMath
         /// <param name="value"></param>
         public FFloat(int value)
         {
+            this.rawValue = value;
             scaledValue = value * MULTIPLER_FACTOR;
         }
 
@@ -63,6 +73,7 @@ namespace FixedMath
         /// <param name="value"></param>
         public FFloat(float value)
         {
+            this.rawValue = (long)Math.Round(value);
             scaledValue = (long)Math.Round(value * MULTIPLER_FACTOR);
         }
 
@@ -72,6 +83,7 @@ namespace FixedMath
         /// <param name="value"></param>
         public FFloat(double value)
         {
+            this.rawValue = (long)Math.Round(value);
             scaledValue = (long)Math.Round(value * MULTIPLER_FACTOR);
         }
 
@@ -287,6 +299,19 @@ namespace FixedMath
                 return new FFloat((left.scaledValue << BitMoveCount) / right.scaledValue);
 
             throw new DivideByZeroException();
+        }
+
+        /// <summary>
+        /// 定点数取余
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FFloat operator %(FFloat left, FFloat right)
+        {
+            if ((right.RawValue & long.MinValue) == -1) return 0;
+
+            return new FFloat((left.RawValue % right.RawValue) * MULTIPLER_FACTOR);
         }
         #endregion
 
