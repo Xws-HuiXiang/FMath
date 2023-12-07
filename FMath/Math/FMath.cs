@@ -6,13 +6,16 @@ namespace FixedMath
 {
     /// <summary>
     /// 定点数使用的数学运算
+    /// <para>
+    /// 区域重映射数学模型：https://blog.csdn.net/Touch_Dream/article/details/62076236
+    /// </para>
     /// </summary>
     public static class FMath
     {
         /// <summary>
         /// π
         /// </summary>
-        public readonly static FFloat PI = new FFloat(Math.PI);
+        public readonly static FFloat PI = new FFloat(3.1415926535);
         /// <summary>
         /// π对应的角度值
         /// </summary>
@@ -20,15 +23,23 @@ namespace FixedMath
         /// <summary>
         /// 2π
         /// </summary>
-        public readonly static FFloat PI2 = new FFloat(2 * Math.PI);
+        public readonly static FFloat PI2 = 2 * FMath.PI;
         /// <summary>
         /// 2π对应的角度值
         /// </summary>
         public const int PI2Angle = 360;
         /// <summary>
+        /// π/2
+        /// </summary>
+        public readonly static FFloat HalfPI = FMath.PI / 2;
+        /// <summary>
+        /// π/2对应的角度值
+        /// </summary>
+        public readonly static FFloat HalfPIAngle = 90;
+        /// <summary>
         /// 自然对数基数 e
         /// </summary>
-        public readonly static FFloat E = new FFloat(Math.E);
+        public readonly static FFloat E = new FFloat(2.7182818284);
         /// <summary>
         /// 弧度转角度的常量：180/π
         /// </summary>
@@ -74,12 +85,19 @@ namespace FixedMath
         {
             //处理弧度值在0~2PI范围内
             FFloat value = radian / PI2;
-            radian -= PI2 * value.Int;
+            if(radian > 0)
+                radian -= PI2 * value.Int;
+            else if(radian < 0)
+                radian += PI2 * value.Int;
             //处理负值
             if (radian < 0)
                 radian += PI2;
             //将 radian 重映射到[0 ~ TotalCount]作为数组索引
-            FFloat index = (radian / PI2) * FMathTable.SinTable.Length;
+            int nMax = FMathTable.SinTable.Length;
+            int nMin = 0;
+            FFloat oMax = FMath.PI2;
+            FFloat oMin = 0;
+            FFloat index = ((nMax - nMin) / (oMax - oMin)) * (radian - oMin) + nMin;
             //钳制索引在数组范围内
             index = FMath.Clamp(index, 0, FMathTable.SinTable.Length - 1);
             FFloat v = FMathTable.SinTable[index.RoundToInt];
@@ -97,7 +115,6 @@ namespace FixedMath
         public static FFloat SinAngle(FFloat angle)
         {
             //处理角度在0~360度之间
-            //需要优先处理，因为定点数计算数字越大误差越大
             angle = ClampEulerAngle360(angle);
 
             return Sin(angle * FMath.Deg2Rad);
@@ -106,18 +123,25 @@ namespace FixedMath
         /// <summary>
         /// 余弦函数
         /// </summary>
-        /// <param name="radian"></param>
+        /// <param name="radian">弧度值</param>
         /// <returns></returns>
         public static FFloat Cos(FFloat radian)
         {
             //处理弧度值在0~2PI范围内
             FFloat value = radian / PI2;
-            radian -= PI2 * value.Int;
+            if (radian > 0)
+                radian -= PI2 * value.Int;
+            else if (radian < 0)
+                radian += PI2 * value.Int;
             //处理负值
             if (radian < 0)
                 radian += PI2;
             //将 radian 重映射到[0 ~ TotalCount]作为数组索引
-            FFloat index = (radian / PI2) * FMathTable.CosTable.Length;
+            int nMax = FMathTable.CosTable.Length;
+            int nMin = 0;
+            FFloat oMax = FMath.PI2;
+            FFloat oMin = 0;
+            FFloat index = ((nMax - nMin) / (oMax - oMin)) * (radian - oMin) + nMin;
             //钳制索引在数组范围内
             index = FMath.Clamp(index, 0, FMathTable.CosTable.Length - 1);
             FFloat v = FMathTable.CosTable[index.RoundToInt];
@@ -130,15 +154,57 @@ namespace FixedMath
         /// <summary>
         /// 余弦函数
         /// </summary>
-        /// <param name="angle"></param>
+        /// <param name="angle">角度值</param>
         /// <returns></returns>
         public static FFloat CosAngle(FFloat angle)
         {
             //处理角度在0~360度之间
-            //需要优先处理，因为定点数计算数字越大误差越大
             angle = ClampEulerAngle360(angle);
 
             return Cos(angle * FMath.Deg2Rad);
+        }
+
+        /// <summary>
+        /// 正切函数
+        /// <para>注意当弧度值接近极限值（例如 0.5π、1.5π等），因为结果为查表所得所以结果不一定准确，甚至会出现正负号与期望值不同的问题</para>
+        /// </summary>
+        /// <param name="radian">弧度值</param>
+        /// <returns></returns>
+        public static FFloat Tan(FFloat radian)
+        {
+            //处理弧度值在(-PI/2~PI/2)范围内
+            FFloat value = radian / PI;
+            if (radian < -HalfPI)
+                radian += PI * value.Int;
+            else if(radian > HalfPI)
+                radian -= PI * value.Int;
+            //将 radian 重映射到[0 ~ TotalCount]作为数组索引
+            int nMax = FMathTable.TanTable.Length;
+            int nMin = 0;
+            FFloat oMax = FMath.HalfPI;
+            FFloat oMin = -FMath.HalfPI;
+            FFloat index = ((nMax - nMin) / (oMax - oMin)) * (radian - oMin) + nMin;
+            //钳制索引在数组范围内
+            index = FMath.Clamp(index, 0, FMathTable.TanTable.Length - 1);
+            FFloat v = FMathTable.TanTable[index.RoundToInt];
+
+            v /= FMathTable.SCALE;
+
+            return v;
+        }
+
+        /// <summary>
+        /// 正切函数
+        /// </summary>
+        /// <param name="angle">角度值</param>
+        /// <para>注意当角度值接近极限值（例如 90°、270°等），因为结果为查表所得所以结果不一定准确，甚至会出现正负号与期望值不同的问题</para>
+        /// <returns></returns>
+        public static FFloat TanAngle(FFloat angle)
+        {
+            //处理角度在-180~180度之间
+            angle = ClampEulerAngle90(angle);
+
+            return Tan(angle * FMath.Deg2Rad);
         }
 
         /// <summary>
@@ -184,6 +250,27 @@ namespace FixedMath
             {
                 while (angle < 0)
                     angle += FMath.PI2Angle;
+            }
+
+            return angle;
+        }
+
+        /// <summary>
+        /// 以 π 为周期，钳制输入角度到（-90~90）度之间
+        /// </summary>
+        /// <param name="angle">欧拉角</param>
+        /// <returns></returns>
+        public static FFloat ClampEulerAngle90(FFloat angle)
+        {
+            if (angle > 0)
+            {
+                while (angle >= FMath.HalfPIAngle)
+                    angle -= FMath.HalfPIAngle;
+            }
+            else if (angle < 0)
+            {
+                while (angle < 0)
+                    angle += FMath.HalfPIAngle;
             }
 
             return angle;
