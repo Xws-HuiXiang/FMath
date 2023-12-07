@@ -10,14 +10,14 @@ namespace GenerateTable
     {
         public static void OnEnterState()
         {
-            Console.WriteLine("是否将值转换为十六进制表示（true 或 false，默认为 true）");
+            Console.WriteLine("是否将值转换为十六进制表示（true 或 false，默认为 false）");
         }
 
         public static bool Handle(InputState inputState, string? content)
         {
             if (string.IsNullOrEmpty(content))
             {
-                Program.OutputOptions.ConvertHexadecimal = true;
+                Program.OutputOptions.ConvertHexadecimal = false;
             }
             else
             {
