@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
 	<LangVersion>latest</LangVersion>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	<RootNamespace>FixedMath</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
