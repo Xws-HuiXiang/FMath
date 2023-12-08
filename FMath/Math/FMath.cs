@@ -74,6 +74,36 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 计算 x 的 y 次方
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static FFloat Pow(FFloat x, int y)
+        {
+            //任何一个数都可以表示为2^n的和，所以循环n次就可以变成循环n的二进制位数次
+            if (x == FFloat.Zero) return 1;
+            if (x < 0)
+            {
+                x = 1 / x;
+                y = -y;
+            }
+            FFloat res = 1;
+            while (y != 0)
+            {
+                if ((y & 1) != 0)
+                {
+                    res *= x;
+                }
+
+                x *= x;
+                y = y >>> 1;
+            }
+
+            return res;
+        }
+
+        /// <summary>
         /// 返回指定数字的绝对值
         /// </summary>
         /// <param name="value"></param>
@@ -251,6 +281,8 @@ namespace FixedMath
 
         /// <summary>
         /// 反正切函数
+        /// <para>由于定义域为整个实数域，所以无法使用查表的方式获取结果</para>
+        /// <para>函数将使用反正切函数的泰勒展开式计算结果</para>
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>

@@ -12,11 +12,11 @@ namespace FixedMath
         /// <summary>
         /// 定点数 0
         /// </summary>
-        public static readonly FFloat Zero = new FFloat(0);
+        public static readonly FFloat Zero = 0;
         /// <summary>
         /// 定点数 1
         /// </summary>
-        public static readonly FFloat One = new FFloat(1);
+        public static readonly FFloat One = 1;
 
         /// <summary>
         /// 扩大数值的左移位数。值越大精度越高
