@@ -78,6 +78,19 @@ namespace FixedMath
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
+        public static FFloat Abs(FFloat value)
+        {
+            if (value < 0)
+                return -value;
+
+            return value;
+        }
+
+        /// <summary>
+        /// 返回指定数字的绝对值
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static FFloat Abs(int value)
         {
             int mask = value >> 31;
