@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FixedMath
+﻿namespace FixedMath
 {
     /// <summary>
     /// 函数表
