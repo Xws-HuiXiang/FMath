@@ -80,6 +80,10 @@ namespace GenerateTable.Output
                     return Math.Cos(x);
                 case GenerateType.Tan:
                     return Math.Tan(x);
+                case GenerateType.Asin:
+                    return Math.Asin(x);
+                case GenerateType.Acos:
+                    return Math.Acos(x);
                 default:
                     break;
             }

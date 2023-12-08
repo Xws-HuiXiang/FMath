@@ -58,12 +58,12 @@ namespace GenerateTable
             {
                 Program.OutputOptions.GenerateType = GenerateType.Acos;
                 //定义域为（-1 ~ 1）
-                Program.OutputOptions.DefineDomainMin = -0.5 * Math.PI;
-                Program.OutputOptions.DefineDomainMax = 0.5 * Math.PI;
+                Program.OutputOptions.DefineDomainMin = -1;
+                Program.OutputOptions.DefineDomainMax = 1;
             }
             else if (content.Equals("atan", StringComparison.OrdinalIgnoreCase) || content.Equals("6"))
             {
-                Console.WriteLine("因为反正切函数的定义域为整个实数域，所以无法生成反正切函数的值对应表");
+                Console.WriteLine("因为反正切函数的定义域为整个实数域，所以无法生成反正切函数的值对应表。请重新选择");
 
                 return false;
             }
