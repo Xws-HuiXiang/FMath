@@ -17,6 +17,9 @@ namespace GenerateTable
             Console.WriteLine("1. Sin（正弦函数）");
             Console.WriteLine("2. Cos（余弦函数）");
             Console.WriteLine("3. Tan（正切函数）");
+            Console.WriteLine("4. Asin（反正切函数）");
+            Console.WriteLine("5. Acos（反余弦函数）");
+            Console.WriteLine("6. Atan（反正切函数）。注意，无法生成反正切函数的值对应表");
         }
 
         public static bool Handle(InputState inputState, string? content)
@@ -43,6 +46,26 @@ namespace GenerateTable
                 //定义域为（-0.5PI ~ 0.5PI）
                 Program.OutputOptions.DefineDomainMin = -0.5 * Math.PI;
                 Program.OutputOptions.DefineDomainMax = 0.5 * Math.PI;
+            }
+            else if (content.Equals("asin", StringComparison.OrdinalIgnoreCase) || content.Equals("4"))
+            {
+                Program.OutputOptions.GenerateType = GenerateType.Asin;
+                //定义域为（-1 ~ 1）
+                Program.OutputOptions.DefineDomainMin = -1;
+                Program.OutputOptions.DefineDomainMax = 1;
+            }
+            else if (content.Equals("acos", StringComparison.OrdinalIgnoreCase) || content.Equals("5"))
+            {
+                Program.OutputOptions.GenerateType = GenerateType.Acos;
+                //定义域为（-1 ~ 1）
+                Program.OutputOptions.DefineDomainMin = -0.5 * Math.PI;
+                Program.OutputOptions.DefineDomainMax = 0.5 * Math.PI;
+            }
+            else if (content.Equals("atan", StringComparison.OrdinalIgnoreCase) || content.Equals("6"))
+            {
+                Console.WriteLine("因为反正切函数的定义域为整个实数域，所以无法生成反正切函数的值对应表");
+
+                return false;
             }
             else
             {

@@ -46,24 +46,7 @@ namespace GenerateTable
             //如果输入了 back 则返回上一步
             if(content != null && content.Equals("back", StringComparison.OrdinalIgnoreCase))
             {
-                switch (Program.NowInputState)
-                {
-                    case InputState.SelectTrigonometricFunction:
-                        break;
-                    case InputState.SelectSliceAmount:
-                        Program.NowInputState = InputState.SelectTrigonometricFunction;
-                        break;
-                    case InputState.Magnification:
-                        Program.NowInputState = InputState.SelectSliceAmount;
-                        break;
-                    case InputState.ConvertHexadecimal:
-                        Program.NowInputState = InputState.Magnification;
-                        break;
-                    case InputState.Restart:
-                        break;
-                    default:
-                        break;
-                }
+                BackInput();
 
                 return false;
             }
@@ -111,6 +94,31 @@ namespace GenerateTable
 
 
             return false;
+        }
+
+        /// <summary>
+        /// 返回上一步输入
+        /// </summary>
+        public static void BackInput()
+        {
+            switch (Program.NowInputState)
+            {
+                case InputState.SelectTrigonometricFunction:
+                    break;
+                case InputState.SelectSliceAmount:
+                    Program.NowInputState = InputState.SelectTrigonometricFunction;
+                    break;
+                case InputState.Magnification:
+                    Program.NowInputState = InputState.SelectSliceAmount;
+                    break;
+                case InputState.ConvertHexadecimal:
+                    Program.NowInputState = InputState.Magnification;
+                    break;
+                case InputState.Restart:
+                    break;
+                default:
+                    break;
+            }
         }
 
         /// <summary>

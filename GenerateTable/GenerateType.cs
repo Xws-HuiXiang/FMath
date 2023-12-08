@@ -22,6 +22,14 @@ namespace GenerateTable
         /// <summary>
         /// 正切函数
         /// </summary>
-        Tan = 3
+        Tan = 3,
+        /// <summary>
+        /// 反正弦函数
+        /// </summary>
+        Asin,
+        /// <summary>
+        /// 反余弦函数
+        /// </summary>
+        Acos
     }
 }
