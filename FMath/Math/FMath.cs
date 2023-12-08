@@ -84,21 +84,19 @@ namespace FixedMath
         {
             //任何一个数都可以表示为2^n的和，所以循环n次就可以变成循环n的二进制位数次
             if (x == FFloat.Zero) return 1;
-            if (x < 0)
+            long b = y;
+            if(b < 0)
             {
                 x = 1 / x;
-                y = -y;
+                b = -b;
             }
             FFloat res = 1;
-            while (y != 0)
+            while (b != 0)
             {
-                if ((y & 1) != 0)
-                {
+                if ((b & 1) == 1)
                     res *= x;
-                }
-
                 x *= x;
-                y = y >>> 1;
+                b >>= 1;
             }
 
             return res;
@@ -311,11 +309,43 @@ namespace FixedMath
         /// <para>由于定义域为整个实数域，所以无法使用查表的方式获取结果</para>
         /// <para>函数将使用反正切函数的泰勒展开式计算结果</para>
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">值</param>
         /// <returns></returns>
         public static FFloat Atan(FFloat value)
         {
-            throw new NotImplementedException();
+            return Atan(value, 8);
+        }
+
+        /// <summary>
+        /// 反正切函数
+        /// <para>由于定义域为整个实数域，所以无法使用查表的方式获取结果</para>
+        /// <para>函数将使用反正切函数的泰勒展开式计算结果</para>
+        /// </summary>
+        /// <param name="value">值</param>
+        /// <param name="expandCount">多项式展开次数</param>
+        /// <returns></returns>
+        public static FFloat Atan(FFloat value, int expandCount)
+        {
+            FFloat res = 0;
+            for (int i = 1; i <= expandCount; i++)
+            {
+                int k = ((2 * i) - 1);
+                FFloat m = (FFloat)1 / k;
+                FFloat v = FMath.Pow(value, k);
+
+                if (i % 2 == 0)
+                {
+                    //多项式减
+                    res -= (m * v);
+                }
+                else
+                {
+                    //多项式加
+                    res += (m * v);
+                }
+            }
+
+            return res;
         }
 
         /// <summary>
