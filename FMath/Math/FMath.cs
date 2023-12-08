@@ -74,6 +74,18 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 返回指定数字的绝对值
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat Abs(int value)
+        {
+            int mask = value >> 31;
+
+            return ((value ^ mask) - mask);
+        }
+
+        /// <summary>
         /// 正弦函数
         /// </summary>
         /// <param name="radian">弧度值</param>
