@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace FixedMath
@@ -261,22 +262,48 @@ namespace FixedMath
 
         /// <summary>
         /// 反正弦函数
+        /// <para>注意：当输入值大于1时，将返回表中最后一个值；当输入值小于-1时，将返回表中第一个值</para>
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         public static FFloat Asin(FFloat value)
         {
-            throw new NotImplementedException();
+            if (value >= 1)
+                return FMathTable.AsinTable.Last();
+            if (value <= -1)
+                return FMathTable.AsinTable.First();
+
+            int halfLength = FMathTable.AsinTable.Length / 2;
+            FFloat rate = (value * halfLength) + halfLength;
+            rate = Clamp(rate, FFloat.Zero, FMathTable.AsinTable.Length - 1);
+
+            FFloat res = FMathTable.AsinTable[rate.Int];
+            res /= FMathTable.SCALE;
+
+            return res;
         }
 
         /// <summary>
         /// 反余弦函数
+        /// <para>注意：当输入值大于1时，将返回表中最后一个值；当输入值小于-1时，将返回表中第一个值</para>
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         public static FFloat Acos(FFloat value)
         {
-            throw new NotImplementedException();
+            if (value >= 1)
+                return FMathTable.AcosTable.Last();
+            if (value <= -1)
+                return FMathTable.AcosTable.First();
+
+            int halfLength = FMathTable.AcosTable.Length / 2;
+            FFloat rate = (value * halfLength) + halfLength;
+            rate = Clamp(rate, FFloat.Zero, FMathTable.AcosTable.Length - 1);
+
+            FFloat res = FMathTable.AcosTable[rate.Int];
+            res /= FMathTable.SCALE;
+
+            return res;
         }
 
         /// <summary>
