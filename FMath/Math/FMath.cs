@@ -101,6 +101,97 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 返回指定数字在使用指定底时的对数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="newBase"></param>
+        /// <returns></returns>
+        public static FFloat Log(FFloat value, FFloat newBase)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 返回指定数字在使用 2 为底数时的对数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat Log2(FFloat value)
+        {
+            return FMath.Log(value, 2);
+        }
+
+        /// <summary>
+        /// 返回指定数字在使用 10 为底数时的对数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat Log10(FFloat value)
+        {
+            return FMath.Log(value, 10);
+        }
+
+        /// <summary>
+        /// 返回指定数字在使用 e 为底数时的对数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat LogE(FFloat value)
+        {
+            return FMath.Log(value, FMath.E);
+        }
+
+        /// <summary>
+        /// 向上取整
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat Ceiling(FFloat value)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 向下取整
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat Floor(FFloat value)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 返回给定数字中最大的值
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static FFloat Max(params FFloat[] values)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 返回给定数字中最小的值
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static FFloat Min(params FFloat[] values)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// 返回数字的整数部分
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat Truncate(FFloat value)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// 返回指定数字的绝对值
         /// </summary>
         /// <param name="value"></param>
