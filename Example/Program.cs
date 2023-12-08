@@ -73,8 +73,13 @@ namespace Example
             Console.WriteLine($"Acos({v9}) -> {FMath.Acos(v9)} >>> 标准数学库计算结果：{Math.Acos(v9.Double)}");
             Console.WriteLine($"Acos({v10}) -> {FMath.Acos(v10)} >>> 标准数学库计算结果：{Math.Acos(v10.Double)}");
             Console.WriteLine($"Acos({v11}) -> {FMath.Acos(v11)} >>> 标准数学库计算结果：{Math.Acos(v11.Double)}");
+            Console.WriteLine($"Atan({v9}) -> {FMath.Atan(v9)} >>> 标准数学库计算结果：{Math.Atan(v9.Double)}");
+            Console.WriteLine($"Atan({v10}) -> {FMath.Atan(v10)} >>> 标准数学库计算结果：{Math.Atan(v10.Double)}");
+            Console.WriteLine($"Atan({v11}) -> {FMath.Atan(v11)} >>> 标准数学库计算结果：{Math.Atan(v11.Double)}");
             Console.WriteLine($"Sqrt({v8}) -> {FMath.Sqrt(v8)}");
             Console.WriteLine($"Pow({v3},{v2}) -> {FMath.Pow(v3, v2.Int)}");
+            FFloat v12 = -4;
+            Console.WriteLine($"Pow({v12},{v3}) -> {FMath.Pow(v12, v3.Int)}");
             Console.WriteLine($"Abs({v10}) -> {FMath.Abs(v10)}");
             Console.WriteLine($"Abs({-11}) -> {FMath.Abs(-11)}");
             //定点数向量
