@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 #endif
 
-namespace FixedMath.Vector
+namespace FixedMath
 {
     /// <summary>
     /// 定点数使用的三维向量
@@ -203,19 +203,19 @@ namespace FixedMath.Vector
         }
 
         /// <summary>
-        /// 计算两向量夹角
+        /// 计算两向量夹角（返回弧度值）
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        /// <returns></returns>
+        /// <returns>返回为弧度值</returns>
         public static FFloat Angle(FVector3 from, FVector3 to)
         {
             FFloat mod = from.Magnitude * to.Magnitude;
             if (mod == 0) return FFloat.Zero;
             FFloat dot = Dot(from, to);
-            //反余弦函数
+            FFloat value = dot / mod;
 
-            return 0;
+            return FMath.Acos(value);
         }
 
         #region 运算符重载
