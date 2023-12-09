@@ -90,6 +90,15 @@ namespace Example
             Console.WriteLine($"Log2({v14}) -> {FMath.Log2(v14)} >>> 标准数学库计算结果：{Math.Log(v14.Double, 2)}");
             //定点数向量
             Console.WriteLine("---------- 定点数向量 ----------");
+            FVector3 v15 = new FVector3(2, 0, 0);
+            FVector3 v16 = new FVector3(0, 2, 0);
+            FVector3 v17 = new FVector3(3, new FFloat(2.5), 5);
+            Console.WriteLine($"向量{v15}的长度为：{v15.Magnitude}");
+            Console.WriteLine($"向量{v15}的长度平方为：{v15.sqrMagnitude}");
+            Console.WriteLine($"向量{v15}的单位向量为：{FVector3.Normalize(v15)}");
+            Console.WriteLine($"向量点乘：{v15} · {v17} -> {FVector3.Dot(v15, v17)}");
+            Console.WriteLine($"向量叉乘：{v15} × {v16} -> {FVector3.Cross(v15, v16)}");
+            Console.WriteLine($"向量{v15}与向量{v16}加角为 -> {FVector3.Angle(v15, v16)}");
             //定点数矩阵
             Console.WriteLine("---------- 定点数矩阵 ----------");
 
