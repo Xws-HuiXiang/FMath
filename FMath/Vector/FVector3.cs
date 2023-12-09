@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-#if UNITY
+﻿#if UNITY
 using UnityEngine;
 #endif
 
 namespace FixedMath
 {
     /// <summary>
-    /// 定点数使用的三维向量
+    /// 定点数三维向量
     /// </summary>
     public struct FVector3
     {
