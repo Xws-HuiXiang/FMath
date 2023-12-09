@@ -82,6 +82,12 @@ namespace Example
             Console.WriteLine($"Pow({v12},{v3}) -> {FMath.Pow(v12, v3.Int)}");
             Console.WriteLine($"Abs({v10}) -> {FMath.Abs(v10)}");
             Console.WriteLine($"Abs({-11}) -> {FMath.Abs(-11)}");
+            FFloat v13 = 4;
+            FFloat v14 = 16;
+            Console.WriteLine($"LogE({v14}) -> {FMath.LogE(v14)} >>> 标准数学库计算结果：{Math.Log(v14.Double, Math.E)}");
+            Console.WriteLine($"Log{v13}({v14}) -> {FMath.Log(v13, v14)} >>> 标准数学库计算结果：{Math.Log(v13.Double, v14.Double)}");
+            Console.WriteLine($"Log10({v14}) -> {FMath.Log10(v14)} >>> 标准数学库计算结果：{Math.Log(v14.Double, 10)}");
+            Console.WriteLine($"Log2({v14}) -> {FMath.Log2(v14)} >>> 标准数学库计算结果：{Math.Log(v14.Double, 2)}");
             //定点数向量
             Console.WriteLine("---------- 定点数向量 ----------");
             //定点数矩阵
