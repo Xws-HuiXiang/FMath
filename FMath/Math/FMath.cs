@@ -141,12 +141,14 @@ namespace FixedMath
 
         /// <summary>
         /// 返回指定数字在使用 e 为底数时的对数
+        /// <para>注意：数字越大，结果越不精确。若需要大数字的相对精确的结果，请使用重载函数‘LogE(FFloat value, int expandCount)’并指定‘expandCount’参数为适宜的大小</para>
+        /// <para>默认多项式展开次数为16</para>
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         public static FFloat LogE(FFloat value)
         {
-            return LogE(value, 8);
+            return LogE(value, 16);
         }
 
         /// <summary>
@@ -160,22 +162,18 @@ namespace FixedMath
             if (value <= FFloat.Zero) throw new ArgumentException("负数与零无对数");
             if (value == FFloat.One) return FFloat.Zero;
 
-            FFloat res = FFloat.Zero;
-            if(value > 1)
+            //自然对数的泰勒展开式：ln(x) = ln((1+y)/(1-y))=2y((1/1*y^0) + (1/3*y^2) + (1/5*y^4) + (1/7*y^6) + ...)
+            //其中，y=(x-1)/(x+1)
+            FFloat y = (value - 1) / (value + 1);
+            FFloat sum = 0;
+            for(int i = 1; i <= expandCount; i++)
             {
-                //当x>1时，自然对数的泰勒展开： ln(1+x) = x - (x^2)/2 + (x^3)/3 - (x^4)/4 + ... + (-1)^(n-1)*(x^n)/n + ...
-                FFloat x = value - 1;
-                for (int i = 1; i <= expandCount; i++)
-                {
-                    FFloat v = (FMath.Pow(-1, (i - 1))) * FMath.Pow(x, i) / i;
+                FFloat v = new FFloat(1) / ((2 * i) - 1);
+                FFloat n = FMath.Pow(y, 2 * (i - 1));
 
-                    res += v;
-                }
+                sum += v * n;
             }
-            else
-            {
-                res = FFloat.Zero;
-            }
+            FFloat res = 2 * y * sum;
 
             return res;
         }
