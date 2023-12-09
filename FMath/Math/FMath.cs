@@ -101,6 +101,86 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 返回指定数字在使用指定底时的对数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="newBase"></param>
+        /// <returns></returns>
+        public static FFloat Log(FFloat value, FFloat newBase)
+        {
+            if (value <= FFloat.Zero) throw new ArgumentException("负数与零无对数");
+            if (value == FFloat.One) return FFloat.Zero;
+
+            //先换底，换成（以e为底value的对数 除以 以e为底newBase的对数）
+            FFloat v1 = LogE(value);
+            FFloat v2 = LogE(newBase);
+            //分别计算自然对数求结果
+
+            return v1 / v2;
+        }
+
+        /// <summary>
+        /// 返回指定数字在使用 2 为底数时的对数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat Log2(FFloat value)
+        {
+            return FMath.Log(value, 2);
+        }
+
+        /// <summary>
+        /// 返回指定数字在使用 10 为底数时的对数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat Log10(FFloat value)
+        {
+            return FMath.Log(value, 10);
+        }
+
+        /// <summary>
+        /// 返回指定数字在使用 e 为底数时的对数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat LogE(FFloat value)
+        {
+            return LogE(value, 8);
+        }
+
+        /// <summary>
+        /// 返回指定数字在使用 e 为底数时的对数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="expandCount">多项式展开次数</param>
+        /// <returns></returns>
+        public static FFloat LogE(FFloat value, int expandCount)
+        {
+            if (value <= FFloat.Zero) throw new ArgumentException("负数与零无对数");
+            if (value == FFloat.One) return FFloat.Zero;
+
+            FFloat res = FFloat.Zero;
+            if(value > 1)
+            {
+                //当x>1时，自然对数的泰勒展开： ln(1+x) = x - (x^2)/2 + (x^3)/3 - (x^4)/4 + ... + (-1)^(n-1)*(x^n)/n + ...
+                FFloat x = value - 1;
+                for (int i = 1; i <= expandCount; i++)
+                {
+                    FFloat v = (FMath.Pow(-1, (i - 1))) * FMath.Pow(x, i) / i;
+
+                    res += v;
+                }
+            }
+            else
+            {
+                res = FFloat.Zero;
+            }
+
+            return res;
+        }
+
+        /// <summary>
         /// 向上取整
         /// </summary>
         /// <param name="value"></param>
