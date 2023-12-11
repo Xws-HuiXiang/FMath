@@ -2,9 +2,6 @@
 using UnityEngine;
 #endif
 
-using System;
-using UnityEngine;
-
 namespace FixedMath
 {
     /// <summary>
@@ -178,6 +175,145 @@ namespace FixedMath
         }
 
         #region 运算符重载
+        /// <summary>
+        /// 向量加法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector2 operator +(FVector2 left, FVector2 right)
+        {
+            FFloat x = left.x + right.x;
+            FFloat y = left.y + right.y;
+
+            return new FVector2(x, y);
+        }
+
+        /// <summary>
+        /// 向量减法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector2 operator -(FVector2 left, FVector2 right)
+        {
+            FFloat x = left.x - right.x;
+            FFloat y = left.y - right.y;
+
+            return new FVector2(x, y);
+        }
+
+        /// <summary>
+        /// 向量乘法
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="left"></param>
+        /// <returns></returns>
+        public static FVector2 operator *(FVector2 left, FFloat value)
+        {
+            FFloat x = left.x * value;
+            FFloat y = left.y * value;
+
+            return new FVector2(x, y);
+        }
+
+        /// <summary>
+        /// 向量乘法
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="left"></param>
+        /// <returns></returns>
+        public static FVector2 operator *(FFloat value, FVector2 left)
+        {
+            FFloat x = value * left.x;
+            FFloat y = value * left.y;
+
+            return new FVector2(x, y);
+        }
+
+        /// <summary>
+        /// 向量除法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FVector2 operator /(FVector2 left, FFloat value)
+        {
+            FFloat x = left.x / value;
+            FFloat y = left.y / value;
+
+            return new FVector2(x, y);
+        }
+
+        /// <summary>
+        /// 向量值取反
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public static FVector2 operator -(FVector2 vector)
+        {
+            FFloat x = -vector.x;
+            FFloat y = -vector.y;
+
+            return new FVector2(x, y);
+        }
+
+        /// <summary>
+        /// 判断向量相等
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool operator ==(FVector2 left, FVector2 right)
+        {
+            return left.x == right.x && left.y == right.y;
+        }
+
+        /// <summary>
+        /// 判断向量不等
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool operator !=(FVector2 left, FVector2 right)
+        {
+            return left.x != right.x || left.y != right.y;
+        }
         #endregion
+
+        /// <summary>
+        /// 判断对象是否相等
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+
+            if (obj is FVector2 v)
+            {
+                return v.x == x && v.y == y;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 返回这个对象的 HashCode
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return x.GetHashCode() ^ y.GetHashCode();
+        }
+
+        /// <summary>
+        /// 返回对象的 x、y 轴的值的字符串
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return $"({x},{y})";
+        }
     }
 }
