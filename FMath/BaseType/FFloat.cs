@@ -194,6 +194,7 @@ namespace FixedMath
 
         /// <summary>
         /// 定点数右移
+        /// <para>此操作会将数值进行 2^n 缩放</para>
         /// </summary>
         /// <param name="value"></param>
         /// <param name="bitMoveCount"></param>
@@ -202,6 +203,7 @@ namespace FixedMath
 
         /// <summary>
         /// 定点数左移
+        /// <para>此操作会将数值进行 2^n 缩放</para>
         /// </summary>
         /// <param name="value"></param>
         /// <param name="bitMoveCount"></param>

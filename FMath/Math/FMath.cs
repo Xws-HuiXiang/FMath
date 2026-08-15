@@ -70,15 +70,14 @@ namespace FixedMath
 
         /// <summary>
         /// 返回指定数字的平方根
+        /// <para>使用整数二分开方</para>
         /// </summary>
         /// <param name="value">需要开方的值</param>
-        /// <param name="interatorCount">迭代次数</param>
         /// <returns></returns>
-        public static FFloat Sqrt(FFloat value, int interatorCount = 8)
+        public static FFloat Sqrt(FFloat value)
         {
             if (value == FFloat.Zero) return 0;
             if (value < 0) throw new ArgumentException("尝试对负数开平方");
-            if (interatorCount <= 0) throw new ArgumentException("开方的迭代次数不能小于等于0");
 
             FInt128 target = FInt128.FromInt64(value.RawValue) << FFloat.BitMoveCount;
             ulong low = 0;
@@ -217,6 +216,7 @@ namespace FixedMath
         {
             if (value <= FFloat.Zero) throw new ArgumentException("负数与零无对数");
             if (value == FFloat.One) return FFloat.Zero;
+            if (expandCount <= 0) throw new ArgumentException("自然对数的多项式展开次数必须大于0", nameof(expandCount));
 
             FFloat normalized = value;
             FFloat exponent = FFloat.Zero;
@@ -374,7 +374,7 @@ namespace FixedMath
         /// <returns></returns>
         public static FFloat Truncate(FFloat value)
         {
-            return value.Int;
+            return new FFloat(value.Int);
         }
 
         /// <summary>
@@ -580,7 +580,6 @@ namespace FixedMath
 
         /// <summary>
         /// 正切函数
-        /// <para>注意当弧度值接近极限值（例如 0.5π、1.5π等），因为结果为查表所得所以结果不一定准确，甚至会出现正负号与期望值不同的问题</para>
         /// </summary>
         /// <param name="radian">弧度值</param>
         /// <returns></returns>
@@ -588,8 +587,12 @@ namespace FixedMath
         {
             SinCos(radian, out FFloat sin, out FFloat cos);
 
+            //防止接近0导致结果过大。这两种方式都可以
+            /*
             if (Abs(cos).RawValue <= 8)
                 throw new DivideByZeroException();
+            */
+            if (cos == FFloat.Zero) throw new DivideByZeroException();
 
             return sin / cos;
         }
@@ -653,8 +656,7 @@ namespace FixedMath
 
         /// <summary>
         /// 反正切函数
-        /// <para>由于定义域为整个实数域，所以无法使用查表的方式获取结果</para>
-        /// <para>函数将使用反正切函数的泰勒展开式计算结果</para>
+        /// <para>使用CORDIC算法获取计算结果</para>
         /// </summary>
         /// <param name="value">值</param>
         /// <returns></returns>
@@ -665,8 +667,7 @@ namespace FixedMath
 
         /// <summary>
         /// 反正切函数
-        /// <para>由于定义域为整个实数域，所以无法使用查表的方式获取结果</para>
-        /// <para>函数将使用反正切函数的泰勒展开式计算结果</para>
+        /// <para>函数将使用反正切函数的泰勒展开式计算结果。这种计算方式比较昂贵，但精度比较好</para>
         /// </summary>
         /// <param name="value">值</param>
         /// <param name="expandCount">多项式展开次数</param>
