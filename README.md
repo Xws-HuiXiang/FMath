@@ -1,7 +1,8 @@
 # FMath 定点数数学库
+
 实现了大部分基础数学函数；实现向量相关运算；实现矩阵相关运算（正在开发）、四元数相关运算（正在开发）。
 
-定点数实现逻辑为扩大指定的倍数（默认为4096），然后使用对应的整数计算。
+定点数实现逻辑为扩大指定的倍数（默认为65536），然后使用对应的整数计算。
 
 注意：**浮点数转换为定点浮点数会有精度损失**。
 
@@ -11,106 +12,29 @@
 
 *注：库中所有方法、字段、属性等均有自动注释*
 
-#### 示例：
+#### 定点数构造方式
 
-``` c#
-using FixedMath;
+直接构造，且支持隐式转换和显示转换
 
-public class Program
-{
-    static void Main(string[] args)
-    {
-        //构造定点数
-        Console.WriteLine("---------- 构造定点数 ----------");
-        FFloat v1 = new FFloat(2.5);
-        FFloat v7 = new FFloat(5.6f);
-        FFloat v2 = new FFloat(4);
-        FFloat v3 = new FFloat(3);
-        //显示转换
-        FFloat v4 = (FFloat)0.3f;
-        FFloat v5 = (FFloat)0.7;
-        //隐式转换
-        FFloat v6 = 6;
-        FFloat v8 = 16;
-        //定点数运算
-        Console.WriteLine("---------- 定点数运算 ----------");
-        Console.WriteLine($"-({v1}) = {-v1}");
-        Console.WriteLine($"{v1} + {v2} = {v1 + v2}");
-        Console.WriteLine($"{v1} - {v2} = {v1 - v2}");
-        Console.WriteLine($"{v1} * {v2} = {v1 * v2}");
-        Console.WriteLine($"{v1} / {v2} = {v1 / v2}");
-        Console.WriteLine($"{v6} % {v2} = {v6 % v2}");
-        //定点数比较
-        Console.WriteLine("---------- 定点数比较 ----------");
-        Console.WriteLine($"{v1} < {v2} ? {v1 < v2}");
-        Console.WriteLine($"{v1} > {v2} ? {v1 > v2}");
-        Console.WriteLine($"{v1} <= {v2} ? {v1 <= v2}");
-        Console.WriteLine($"{v1} >= {v2} ? {v1 >= v2}");
-        Console.WriteLine($"{v1} == {v2} ? {v1 == v2}");
-        Console.WriteLine($"{v1} != {v2} ? {v1 != v2}");
-        //定点数数学库
-        Console.WriteLine("---------- 定点数数学库 ----------");
-        Console.WriteLine($"π -> {FMath.PI}");
-        Console.WriteLine($"2π -> {FMath.PI2}");
-        Console.WriteLine($"e -> {FMath.E}");
-        Console.WriteLine($"Deg2Rad -> {FMath.Deg2Rad}");
-        Console.WriteLine($"Rad2Deg -> {FMath.Rad2Deg}");
-        FFloat eulerAngle1 = 30;
-        FFloat rad1 = (FFloat)1.57075;
-        FFloat rad2 = (FFloat)32.415926;
-        FFloat eulerAngle2 = 60;
-        FFloat eulerAngle3 = 90;
-        FFloat eulerAngle4 = 360 + 30;
-        FFloat eulerAngle5 = -360 - 60;
-        FFloat eulerAngle6 = 720 + 30;
-        Console.WriteLine($"SinAngle({eulerAngle1}) -> {FMath.SinAngle(eulerAngle1)} >>> 标准数学库计算结果：{Math.Sin(eulerAngle1.Double * (Math.PI / 180))}");
-        Console.WriteLine($"SinAngle({eulerAngle2}) -> {FMath.SinAngle(eulerAngle2)} >>> 标准数学库计算结果：{Math.Sin(eulerAngle2.Double * (Math.PI / 180))}");
-        Console.WriteLine($"SinAngle({eulerAngle5}) -> {FMath.SinAngle(eulerAngle5)} >>> 标准数学库计算结果：{Math.Sin(eulerAngle5.Double * (Math.PI / 180))}");
-        Console.WriteLine($"Sin({rad1}) -> {FMath.Sin(rad1)} >>> 标准数学库计算结果：{Math.Sin(rad1.Double)}");
-        Console.WriteLine($"Sin({rad2}) -> {FMath.Sin(rad2)} >>> 标准数学库计算结果：{Math.Sin(rad2.Double)}");
-        Console.WriteLine($"CosAngle({eulerAngle3}) -> {FMath.CosAngle(eulerAngle3)} >>> 标准数学库计算结果：{Math.Cos(eulerAngle3.Double * (Math.PI / 180))}");
-        Console.WriteLine($"CosAngle({eulerAngle5}) -> {FMath.CosAngle(eulerAngle5)} >>> 标准数学库计算结果：{Math.Cos(eulerAngle5.Double * (Math.PI / 180))}");
-        Console.WriteLine($"CosAngle({eulerAngle6}) -> {FMath.CosAngle(eulerAngle6)} >>> 标准数学库计算结果：{Math.Cos(eulerAngle6.Double * (Math.PI / 180))}");
-        Console.WriteLine($"Cos({rad1}) -> {FMath.Cos(rad1)} >>> 标准数学库计算结果：{Math.Cos(rad1.Double)}");
-        Console.WriteLine($"Cos({rad2}) -> {FMath.Cos(rad2)} >>> 标准数学库计算结果：{Math.Cos(rad2.Double)}");
-        Console.WriteLine($"TanAngle({eulerAngle1}) -> {FMath.TanAngle(eulerAngle1)} >>> 标准数学库计算结果：{Math.Tan(eulerAngle1.Double * (Math.PI / 180))}");
-        Console.WriteLine($"TanAngle({eulerAngle2}) -> {FMath.TanAngle(eulerAngle2)} >>> 标准数学库计算结果：{Math.Tan(eulerAngle2.Double * (Math.PI / 180))}");
-        Console.WriteLine($"TanAngle({eulerAngle4}) -> {FMath.TanAngle(eulerAngle4)} >>> 标准数学库计算结果：{Math.Tan(eulerAngle4.Double * (Math.PI / 180))}");
-        Console.WriteLine($"Tan({rad1}) -> {FMath.Tan(rad1)} >>> 标准数学库计算结果：{Math.Tan(rad1.Double)}");
-        Console.WriteLine($"Tan({rad2}) -> {FMath.Tan(rad2)} >>> 标准数学库计算结果：{Math.Tan(rad2.Double)}");
-        FFloat v9 = new FFloat(0.1);
-        FFloat v10 = new FFloat(-0.3);
-        FFloat v11 = new FFloat(0.8);
-        Console.WriteLine($"Asin({v9}) -> {FMath.Asin(v9)} >>> 标准数学库计算结果：{Math.Asin(v9.Double)}");
-        Console.WriteLine($"Asin({v10}) -> {FMath.Asin(v10)} >>> 标准数学库计算结果：{Math.Asin(v10.Double)}");
-        Console.WriteLine($"Asin({v11}) -> {FMath.Asin(v11)} >>> 标准数学库计算结果：{Math.Asin(v11.Double)}");
-        Console.WriteLine($"Acos({v9}) -> {FMath.Acos(v9)} >>> 标准数学库计算结果：{Math.Acos(v9.Double)}");
-        Console.WriteLine($"Acos({v10}) -> {FMath.Acos(v10)} >>> 标准数学库计算结果：{Math.Acos(v10.Double)}");
-        Console.WriteLine($"Acos({v11}) -> {FMath.Acos(v11)} >>> 标准数学库计算结果：{Math.Acos(v11.Double)}");
-        Console.WriteLine($"Atan({v9}) -> {FMath.Atan(v9)} >>> 标准数学库计算结果：{Math.Atan(v9.Double)}");
-        Console.WriteLine($"Atan({v10}) -> {FMath.Atan(v10)} >>> 标准数学库计算结果：{Math.Atan(v10.Double)}");
-        Console.WriteLine($"Atan({v11}) -> {FMath.Atan(v11)} >>> 标准数学库计算结果：{Math.Atan(v11.Double)}");
-        Console.WriteLine($"Sqrt({v8}) -> {FMath.Sqrt(v8)}");
-        Console.WriteLine($"Pow({v3},{v2}) -> {FMath.Pow(v3, v2.Int)}");
-        FFloat v12 = -4;
-        Console.WriteLine($"Pow({v12},{v3}) -> {FMath.Pow(v12, v3.Int)}");
-        Console.WriteLine($"Abs({v10}) -> {FMath.Abs(v10)}");
-        Console.WriteLine($"Abs({-11}) -> {FMath.Abs(-11)}");
-        FFloat v13 = 4;
-        FFloat v14 = 16;
-        Console.WriteLine($"LogE({v14}) -> {FMath.LogE(v14)} >>> 标准数学库计算结果：{Math.Log(v14.Double, Math.E)}");
-        Console.WriteLine($"Log{v13}({v14}) -> {FMath.Log(v13, v14)} >>> 标准数学库计算结果：{Math.Log(v13.Double, v14.Double)}");
-        Console.WriteLine($"Log10({v14}) -> {FMath.Log10(v14)} >>> 标准数学库计算结果：{Math.Log(v14.Double, 10)}");
-        Console.WriteLine($"Log2({v14}) -> {FMath.Log2(v14)} >>> 标准数学库计算结果：{Math.Log(v14.Double, 2)}");
-        //定点数向量
-        Console.WriteLine("---------- 定点数向量 ----------");
-        FVector3 v15 = new FVector3(2, 0, 0);
-        FVector3 v16 = new FVector3(0, 2, 0);
-        FVector3 v17 = new FVector3(3, new FFloat(2.5), 5);
-        Console.WriteLine($"向量{v15}的长度为：{v15.Magnitude}");
-        Console.WriteLine($"向量{v15}的长度平方为：{v15.sqrMagnitude}");
-        Console.WriteLine($"向量{v15}的单位向量为：{FVector3.Normalize(v15)}");
-        Console.WriteLine($"向量点乘：{v15} · {v17} -> {FVector3.Dot(v15, v17)}");
-        Console.WriteLine($"向量叉乘：{v15} × {v16} -> {FVector3.Cross(v15, v16)}");
-        Console.WriteLine($"向量{v15}与向量{v16}加角为 -> {FVector3.Angle(v15, v16)}");
+```C#
+FFloat fromInt = new FFloat(2);
+FFloat fromFloat = new FFloat(2.5f);
+FFloat explicitDouble = (FFloat)0.7;
+FFloat implicitInt = 6;
 ```
+
+#### 定点数数学库 API
+
+主要的类为`FMath`，其中方法名称与`Math`类类似
+
+```C#
+FMath.Sqrt(16);
+FMath.E;
+FMath.LogE(logValue);
+FMath.Ceiling(new FFloat(1.2));
+FMath.Max(2, 5);
+Math.Sin(rad1.Double);
+FMath.Acos(asinValue);
+```
+
+~~支持定点数向量`FVector2`、`FVector3`和`FVector4`；支持定点数四元数`FQuaternion`；支持定点数矩阵`FMatrix`。~~
