@@ -12,15 +12,20 @@ namespace Example
             FFloat v7 = new FFloat(5.6f);
             FFloat v2 = new FFloat(4);
             FFloat v3 = new FFloat(3);
+            FFloat v18 = new FFloat(-7.8f);
             //显示转换
             FFloat v4 = (FFloat)0.3f;
             FFloat v5 = (FFloat)0.7;
             //隐式转换
             FFloat v6 = 6;
             FFloat v8 = 16;
+            Console.WriteLine("---------- 定点数常量 ----------");
+            Console.WriteLine($"0 --> {FFloat.Zero}");
+            Console.WriteLine($"1 --> {FFloat.One}");
             //定点数运算
             Console.WriteLine("---------- 定点数运算 ----------");
             Console.WriteLine($"-({v1}) = {-v1}");
+            Console.WriteLine($"-({v18}) = {-v18}");
             Console.WriteLine($"{v1} + {v2} = {v1 + v2}");
             Console.WriteLine($"{v1} - {v2} = {v1 - v2}");
             Console.WriteLine($"{v1} * {v2} = {v1 * v2}");

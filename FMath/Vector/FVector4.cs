@@ -58,7 +58,7 @@ namespace FixedMath.Vector
         /// <returns></returns>
         public long[] ConvertLongArray()
         {
-            return new long[] { x.ScaledValue, y.ScaledValue, z.ScaledValue, w.ScaledValue };
+            return new long[] { x.RawValue, y.RawValue, z.RawValue, w.RawValue };
         }
 
         /// <summary>

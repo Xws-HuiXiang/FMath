@@ -100,7 +100,7 @@ namespace FixedMath
         /// <returns></returns>
         public long[] ConvertLongArray()
         {
-            return new long[] { x.ScaledValue, y.ScaledValue, z.ScaledValue };
+            return new long[] { x.RawValue, y.RawValue, z.RawValue };
         }
 
         /// <summary>

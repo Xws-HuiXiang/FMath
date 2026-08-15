@@ -11,7 +11,7 @@ namespace FixedMath
         /// <summary>
         /// π
         /// </summary>
-        public readonly static FFloat PI = new FFloat(3.1415926535);
+        public readonly static FFloat PI = new FFloat(Math.PI);
         /// <summary>
         /// π对应的角度值
         /// </summary>
@@ -35,7 +35,7 @@ namespace FixedMath
         /// <summary>
         /// 自然对数基数 e
         /// </summary>
-        public readonly static FFloat E = new FFloat(2.7182818284);
+        public readonly static FFloat E = new FFloat(Math.E);
         /// <summary>
         /// 弧度转角度的常量：180/π
         /// </summary>
@@ -81,7 +81,15 @@ namespace FixedMath
         public static FFloat Pow(FFloat x, int y)
         {
             //任何一个数都可以表示为2^n的和，所以循环n次就可以变成循环n的二进制位数次
-            if (x == FFloat.Zero) return 1;
+            if (x == FFloat.Zero)
+            {
+                if (y == 0)
+                    return FFloat.One;
+                if (y > 0)
+                    return FFloat.Zero;
+
+                throw new DivideByZeroException();
+            }
             long b = y;
             if(b < 0)
             {
@@ -110,6 +118,10 @@ namespace FixedMath
         {
             if (value <= FFloat.Zero) throw new ArgumentException("负数与零无对数");
             if (value == FFloat.One) return FFloat.Zero;
+            if (newBase <= 0)
+                throw new ArgumentException("对数换底时的新底值必须大于0");
+            if (newBase == 1)
+                throw new ArgumentException("对数换底时的新底值必须不为1");
 
             //先换底，换成（以e为底value的对数 除以 以e为底newBase的对数）
             FFloat v1 = LogE(value);
@@ -185,7 +197,17 @@ namespace FixedMath
         /// <returns></returns>
         public static FFloat Ceiling(FFloat value)
         {
-            return (value.Int + 1);
+            long raw = value.RawValue;
+
+            long integer = raw >> FFloat.BitMoveCount;
+
+            if ((raw & (FFloat.MULTIPLER_FACTOR - 1)) != 0)
+            {
+                if (raw > 0)
+                    integer++;
+            }
+
+            return FFloat.FromRaw(integer * FFloat.MULTIPLER_FACTOR, true);
         }
 
         /// <summary>
@@ -195,7 +217,21 @@ namespace FixedMath
         /// <returns></returns>
         public static FFloat Floor(FFloat value)
         {
-            return value.Int;
+            long raw = value.RawValue;
+            long integerRaw = (raw >> FFloat.BitMoveCount) << FFloat.BitMoveCount;
+
+            return FFloat.FromRaw(integerRaw, true);
+        }
+
+        /// <summary>
+        /// 返回给定数字中最大的值
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FFloat Max(FFloat left, FFloat right)
+        {
+            return left > right ? left : right;
         }
 
         /// <summary>
@@ -216,6 +252,17 @@ namespace FixedMath
             }
 
             return res;
+        }
+
+        /// <summary>
+        /// 返回给定数字中最小的值
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FFloat Min(FFloat left, FFloat right)
+        {
+            return left < right ? left : right;
         }
 
         /// <summary>
@@ -266,11 +313,21 @@ namespace FixedMath
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static FFloat Abs(int value)
+        public static int Abs(int value)
         {
             int mask = value >> 31;
 
             return ((value ^ mask) - mask);
+        }
+
+        /// <summary>
+        /// 返回指定数字的绝对值
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FFloat AbsToFFloat(int value)
+        {
+            return (FFloat)Abs(value);
         }
 
         /// <summary>
@@ -312,7 +369,7 @@ namespace FixedMath
         public static FFloat SinAngle(FFloat angle)
         {
             //处理角度在0~360度之间
-            angle = ClampEulerAngle360(angle);
+            angle = Normalize360(angle);
 
             return Sin(angle * FMath.Deg2Rad);
         }
@@ -356,7 +413,7 @@ namespace FixedMath
         public static FFloat CosAngle(FFloat angle)
         {
             //处理角度在0~360度之间
-            angle = ClampEulerAngle360(angle);
+            angle = Normalize360(angle);
 
             return Cos(angle * FMath.Deg2Rad);
         }
@@ -399,7 +456,7 @@ namespace FixedMath
         public static FFloat TanAngle(FFloat angle)
         {
             //处理角度在-180~180度之间
-            angle = ClampEulerAngle90(angle);
+            angle = NormalizeAngle90(angle);
 
             return Tan(angle * FMath.Deg2Rad);
         }
@@ -516,18 +573,12 @@ namespace FixedMath
         /// </summary>
         /// <param name="angle">欧拉角</param>
         /// <returns></returns>
-        public static FFloat ClampEulerAngle360(FFloat angle)
+        public static FFloat Normalize360(FFloat angle)
         {
-            if (angle > 0)
-            {
-                while (angle >= FMath.PI2Angle)
-                    angle -= FMath.PI2Angle;
-            }
-            else if (angle < 0)
-            {
-                while (angle < 0)
-                    angle += FMath.PI2Angle;
-            }
+            angle %= 360;
+
+            if (angle < 0)
+                angle += 360;
 
             return angle;
         }
@@ -537,18 +588,14 @@ namespace FixedMath
         /// </summary>
         /// <param name="angle">欧拉角</param>
         /// <returns></returns>
-        public static FFloat ClampEulerAngle90(FFloat angle)
+        public static FFloat NormalizeAngle90(FFloat angle)
         {
-            if (angle > 0)
-            {
-                while (angle >= FMath.HalfPIAngle)
-                    angle -= FMath.HalfPIAngle;
-            }
-            else if (angle < 0)
-            {
-                while (angle < 0)
-                    angle += FMath.HalfPIAngle;
-            }
+            angle %= 180;
+
+            if (angle > 90)
+                angle -= 180;
+            else if (angle <= -90)
+                angle += 180;
 
             return angle;
         }
