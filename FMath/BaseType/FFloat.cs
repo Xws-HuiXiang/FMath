@@ -19,14 +19,21 @@ namespace FixedMath
         /// <summary>
         /// 扩大数值的左移位数。值越大精度越高
         /// <para>定点数实现核心为扩大扩大浮点数的值，这个值即为原本数值左移的位数</para>
-        /// <para>默认为12即左移12位，数值将扩大4096（2的12次方）倍</para>
+        /// <para>默认为16即左移16位，数值将扩大65536（2的16次方）倍</para>
         /// </summary>
-        public static UInt16 BitMoveCount { get; set; } = 12;
+        public const UInt16 BitMoveCount = 16;
         /// <summary>
         /// 扩大数值的倍数
         /// </summary>
-        public static long MULTIPLER_FACTOR = 1 << BitMoveCount;
+        public const long MULTIPLER_FACTOR = 1L << BitMoveCount;
 
+        /// <summary>
+        /// 定点数内部真实存储值。
+        /// 
+        /// 例如：
+        /// 1.0 -> 65536
+        /// 0.5 -> 32768
+        /// </summary>
         private long scaledValue;
         /// <summary>
         /// 原本数值被缩放后的值
@@ -38,7 +45,7 @@ namespace FixedMath
         }
         private long rawValue;
         /// <summary>
-        /// 真实值
+        /// 定点数原始值
         /// </summary>
         public long RawValue
         {
