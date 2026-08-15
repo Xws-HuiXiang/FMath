@@ -112,6 +112,8 @@ namespace FixedMath.Vector
 
                 x *= rate;
                 y *= rate;
+                z *= rate;
+                w *= rate;
             }
         }
 

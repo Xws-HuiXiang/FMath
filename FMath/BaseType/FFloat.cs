@@ -232,16 +232,10 @@ namespace FixedMath
         /// <returns></returns>
         public static FFloat operator *(FFloat left, FFloat right)
         {
-            long value = left.rawValue * right.rawValue;
-            value /= MULTIPLER_FACTOR;
+            FInt128 result = FInt128.MultiplySigned(left.rawValue, right.rawValue);
+            result >>= BitMoveCount;
 
-            return FromRaw(value);
-
-            //使用FInt128作为乘法中间的缓冲区
-            //FInt128 result = FInt128.MultiplyUnsigned(left.rawValue, right.rawValue);
-            //result >>= BitMoveCount;
-
-            //return FromRaw(result.ToInt64());
+            return FromRaw(result.ToInt64Checked());
         }
 
         /// <summary>
@@ -256,9 +250,10 @@ namespace FixedMath
             if (right.rawValue == 0)
                 throw new DivideByZeroException();
 
-            long value = (left.rawValue * MULTIPLER_FACTOR) / right.rawValue;
+            FInt128 numerator = FInt128.FromInt64(left.rawValue) << BitMoveCount;
+            FInt128 result = FInt128.DivideSigned(numerator, right.rawValue);
 
-            return FromRaw(value);
+            return FromRaw(result.ToInt64Checked());
         }
 
         /// <summary>
@@ -283,7 +278,7 @@ namespace FixedMath
         /// <param name="value"></param>
         public static explicit operator FFloat(float value)
         {
-            return new FFloat((long)Math.Round(value * MULTIPLER_FACTOR));
+            return new FFloat(value);
         }
 
         /// <summary>
@@ -292,7 +287,7 @@ namespace FixedMath
         /// <param name="value"></param>
         public static explicit operator FFloat(double value)
         {
-            return new FFloat((long)Math.Round(value * MULTIPLER_FACTOR));
+            return new FFloat(value);
         }
 
         /// <summary>

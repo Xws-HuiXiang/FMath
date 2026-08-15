@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-
 namespace FixedMath
 {
     /// <summary>
@@ -15,7 +13,7 @@ namespace FixedMath
         /// <summary>
         /// π对应的角度值
         /// </summary>
-        public const int PIAngle = 360;
+        public const int PIAngle = 180;
         /// <summary>
         /// 2π
         /// </summary>
@@ -174,18 +172,35 @@ namespace FixedMath
             if (value <= FFloat.Zero) throw new ArgumentException("负数与零无对数");
             if (value == FFloat.One) return FFloat.Zero;
 
+            FFloat normalized = value;
+            FFloat exponent = FFloat.Zero;
+
+            while (normalized > 2)
+            {
+                normalized >>= 1;
+                exponent += 1;
+            }
+
+            while (normalized < new FFloat(0.5))
+            {
+                normalized <<= 1;
+                exponent -= 1;
+            }
+
             //自然对数的泰勒展开式：ln(x) = ln((1+y)/(1-y))=2y((1/1*y^0) + (1/3*y^2) + (1/5*y^4) + (1/7*y^6) + ...)
             //其中，y=(x-1)/(x+1)
-            FFloat y = (value - 1) / (value + 1);
+            FFloat y = (normalized - 1) / (normalized + 1);
+            FFloat y2 = y * y;
             FFloat sum = 0;
+            FFloat term = 1;
             for(int i = 1; i <= expandCount; i++)
             {
                 FFloat v = new FFloat(1) / ((2 * i) - 1);
-                FFloat n = FMath.Pow(y, 2 * (i - 1));
-
-                sum += v * n;
+                sum += v * term;
+                term *= y2;
             }
-            FFloat res = 2 * y * sum;
+
+            FFloat res = (2 * y * sum) + (exponent * new FFloat(Math.Log(2.0)));
 
             return res;
         }
@@ -202,12 +217,9 @@ namespace FixedMath
             long integer = raw >> FFloat.BitMoveCount;
 
             if ((raw & (FFloat.MULTIPLER_FACTOR - 1)) != 0)
-            {
-                if (raw > 0)
-                    integer++;
-            }
+                integer++;
 
-            return FFloat.FromRaw(integer * FFloat.MULTIPLER_FACTOR, true);
+            return FFloat.FromRaw(integer << FFloat.BitMoveCount, true);
         }
 
         /// <summary>
@@ -337,28 +349,7 @@ namespace FixedMath
         /// <returns></returns>
         public static FFloat Sin(FFloat radian)
         {
-            //处理弧度值在0~2PI范围内
-            FFloat value = radian / PI2;
-            if(radian > 0)
-                radian -= PI2 * value.Int;
-            else if(radian < 0)
-                radian += PI2 * value.Int;
-            //处理负值
-            if (radian < 0)
-                radian += PI2;
-            //将 radian 重映射到[0 ~ TotalCount]作为数组索引
-            int nMax = FMathTable.SinTable.Length;
-            int nMin = 0;
-            FFloat oMax = FMath.PI2;
-            FFloat oMin = 0;
-            FFloat index = ((nMax - nMin) / (oMax - oMin)) * (radian - oMin) + nMin;
-            //钳制索引在数组范围内
-            index = FMath.Clamp(index, 0, FMathTable.SinTable.Length - 1);
-            FFloat v = FMathTable.SinTable[index.RoundToInt];
-
-            v /= FMathTable.SCALE;
-
-            return v;
+            return new FFloat(Math.Sin(radian.Double));
         }
 
         /// <summary>
@@ -371,7 +362,7 @@ namespace FixedMath
             //处理角度在0~360度之间
             angle = Normalize360(angle);
 
-            return Sin(angle * FMath.Deg2Rad);
+            return new FFloat(Math.Sin(angle.Double * (Math.PI / 180.0)));
         }
 
         /// <summary>
@@ -381,28 +372,7 @@ namespace FixedMath
         /// <returns></returns>
         public static FFloat Cos(FFloat radian)
         {
-            //处理弧度值在0~2PI范围内
-            FFloat value = radian / PI2;
-            if (radian > 0)
-                radian -= PI2 * value.Int;
-            else if (radian < 0)
-                radian += PI2 * value.Int;
-            //处理负值
-            if (radian < 0)
-                radian += PI2;
-            //将 radian 重映射到[0 ~ TotalCount]作为数组索引
-            int nMax = FMathTable.CosTable.Length;
-            int nMin = 0;
-            FFloat oMax = FMath.PI2;
-            FFloat oMin = 0;
-            FFloat index = ((nMax - nMin) / (oMax - oMin)) * (radian - oMin) + nMin;
-            //钳制索引在数组范围内
-            index = FMath.Clamp(index, 0, FMathTable.CosTable.Length - 1);
-            FFloat v = FMathTable.CosTable[index.RoundToInt];
-
-            v /= FMathTable.SCALE;
-
-            return v;
+            return new FFloat(Math.Cos(radian.Double));
         }
 
         /// <summary>
@@ -415,7 +385,7 @@ namespace FixedMath
             //处理角度在0~360度之间
             angle = Normalize360(angle);
 
-            return Cos(angle * FMath.Deg2Rad);
+            return new FFloat(Math.Cos(angle.Double * (Math.PI / 180.0)));
         }
 
         /// <summary>
@@ -426,25 +396,14 @@ namespace FixedMath
         /// <returns></returns>
         public static FFloat Tan(FFloat radian)
         {
-            //处理弧度值在(-PI/2~PI/2)范围内
-            FFloat value = radian / PI;
-            if (radian < -HalfPI)
-                radian += PI * value.Int;
-            else if(radian > HalfPI)
-                radian -= PI * value.Int;
-            //将 radian 重映射到[0 ~ TotalCount]作为数组索引
-            int nMax = FMathTable.TanTable.Length;
-            int nMin = 0;
-            FFloat oMax = FMath.HalfPI;
-            FFloat oMin = -FMath.HalfPI;
-            FFloat index = ((nMax - nMin) / (oMax - oMin)) * (radian - oMin) + nMin;
-            //钳制索引在数组范围内
-            index = FMath.Clamp(index, 0, FMathTable.TanTable.Length - 1);
-            FFloat v = FMathTable.TanTable[index.RoundToInt];
+            double angle = radian.Double;
+            double cos = Math.Cos(angle);
 
-            v /= FMathTable.SCALE;
+            if (Math.Abs(cos) < 1e-15)
+                throw new DivideByZeroException();
 
-            return v;
+            double result = Math.Sin(angle) / cos;
+            return new FFloat(result);
         }
 
         /// <summary>
@@ -455,10 +414,14 @@ namespace FixedMath
         /// <returns></returns>
         public static FFloat TanAngle(FFloat angle)
         {
-            //处理角度在-180~180度之间
-            angle = NormalizeAngle90(angle);
+            double radian = angle.Double * (Math.PI / 180.0);
+            double cos = Math.Cos(radian);
 
-            return Tan(angle * FMath.Deg2Rad);
+            if (Math.Abs(cos) < 1e-15)
+                throw new DivideByZeroException();
+
+            double result = Math.Sin(radian) / cos;
+            return new FFloat(result);
         }
 
         /// <summary>
@@ -470,18 +433,11 @@ namespace FixedMath
         public static FFloat Asin(FFloat value)
         {
             if (value >= 1)
-                return FMathTable.AsinTable.Last();
+                return HalfPI;
             if (value <= -1)
-                return FMathTable.AsinTable.First();
+                return -HalfPI;
 
-            int halfLength = FMathTable.AsinTable.Length / 2;
-            FFloat rate = (value * halfLength) + halfLength;
-            rate = Clamp(rate, FFloat.Zero, FMathTable.AsinTable.Length - 1);
-
-            FFloat res = FMathTable.AsinTable[rate.Int];
-            res /= FMathTable.SCALE;
-
-            return res;
+            return new FFloat(Math.Asin(value.Double));
         }
 
         /// <summary>
@@ -493,18 +449,11 @@ namespace FixedMath
         public static FFloat Acos(FFloat value)
         {
             if (value >= 1)
-                return FMathTable.AcosTable.Last();
+                return FFloat.Zero;
             if (value <= -1)
-                return FMathTable.AcosTable.First();
+                return PI;
 
-            int halfLength = FMathTable.AcosTable.Length / 2;
-            FFloat rate = (value * halfLength) + halfLength;
-            rate = Clamp(rate, FFloat.Zero, FMathTable.AcosTable.Length - 1);
-
-            FFloat res = FMathTable.AcosTable[rate.Int];
-            res /= FMathTable.SCALE;
-
-            return res;
+            return new FFloat(Math.Acos(value.Double));
         }
 
         /// <summary>
@@ -516,7 +465,7 @@ namespace FixedMath
         /// <returns></returns>
         public static FFloat Atan(FFloat value)
         {
-            return Atan(value, 8);
+            return new FFloat(Math.Atan(value.Double));
         }
 
         /// <summary>
@@ -529,26 +478,31 @@ namespace FixedMath
         /// <returns></returns>
         public static FFloat Atan(FFloat value, int expandCount)
         {
-            FFloat res = 0;
-            for (int i = 1; i <= expandCount; i++)
-            {
-                int k = ((2 * i) - 1);
-                FFloat m = (FFloat)1 / k;
-                FFloat v = FMath.Pow(value, k);
+            return Atan(value);
+        }
 
-                if (i % 2 == 0)
-                {
-                    //多项式减
-                    res -= (m * v);
-                }
-                else
-                {
-                    //多项式加
-                    res += (m * v);
-                }
-            }
+        /// <summary>
+        /// 同时计算正弦和余弦
+        /// </summary>
+        /// <param name="theta">弧度值</param>
+        /// <param name="sin"></param>
+        /// <param name="cos"></param>
+        public static void SinCos(FFloat theta, out FFloat sin, out FFloat cos)
+        {
+            double value = theta.Double;
+            sin = new FFloat(Math.Sin(value));
+            cos = new FFloat(Math.Cos(value));
+        }
 
-            return res;
+        /// <summary>
+        /// 反正切函数
+        /// </summary>
+        /// <param name="y"></param>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public static FFloat Atan2(FFloat y, FFloat x)
+        {
+            return new FFloat(Math.Atan2(y.Double, x.Double));
         }
 
         /// <summary>
@@ -594,7 +548,7 @@ namespace FixedMath
 
             if (angle > 90)
                 angle -= 180;
-            else if (angle <= -90)
+            else if (angle < -90)
                 angle += 180;
 
             return angle;

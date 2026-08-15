@@ -157,7 +157,7 @@ namespace FixedMath
         /// <returns></returns>
         public static FVector2 Cross(FVector2 left, FVector2 right)
         {
-            return new FVector2(0, left.x * right.y - left.x * right.y);
+            return new FVector2(0, left.x * right.y - left.y * right.x);
         }
 
         /// <summary>
