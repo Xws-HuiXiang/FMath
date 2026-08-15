@@ -122,19 +122,23 @@ namespace FixedMath.BaseType
                 throw new DivideByZeroException();
 
             FInt128 quotient = Zero;
-            ulong rem = 0;
+            FInt128 rem = Zero;
+            FInt128 divisorValue = FromUInt64(divisor);
 
             for (int i = 127; i >= 0; i--)
             {
-                rem = (rem << 1) | dividend.GetBit(i);
-                if (rem >= divisor)
+                rem <<= 1;
+                if (dividend.GetBit(i) != 0)
+                    rem.Low |= 1UL;
+
+                if (CompareUnsigned(rem, divisorValue) >= 0)
                 {
-                    rem -= divisor;
+                    rem -= divisorValue;
                     quotient.SetBit(i);
                 }
             }
 
-            remainder = rem;
+            remainder = rem.Low;
             return quotient;
         }
 
@@ -178,6 +182,24 @@ namespace FixedMath.BaseType
             if (left.High < right.High)
                 return -1;
             if (left.High > right.High)
+                return 1;
+
+            if (left.Low < right.Low)
+                return -1;
+            if (left.Low > right.Low)
+                return 1;
+
+            return 0;
+        }
+
+        internal static int CompareUnsigned(FInt128 left, FInt128 right)
+        {
+            ulong leftHigh = unchecked((ulong)left.High);
+            ulong rightHigh = unchecked((ulong)right.High);
+
+            if (leftHigh < rightHigh)
+                return -1;
+            if (leftHigh > rightHigh)
                 return 1;
 
             if (left.Low < right.Low)

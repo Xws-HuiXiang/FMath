@@ -125,7 +125,9 @@ namespace Example
             CheckFFloat("Deg2Rad", FMath.Deg2Rad, Math.PI / 180, FFloatTolerance);
 
             CheckFFloat("Sqrt", FMath.Sqrt(16), 4);
+            CheckFFloat("Sqrt small value", FMath.Sqrt(new FFloat(0.0001)), 0.01, MathTolerance);
             CheckThrows<ArgumentException>("Sqrt negative", () => _ = FMath.Sqrt(-1));
+            CheckThrows<ArgumentException>("Sqrt invalid iterator", () => _ = FMath.Sqrt(1, 0));
             CheckFFloat("Pow positive", FMath.Pow(3, 4), 81);
             CheckFFloat("Pow negative base", FMath.Pow(-4, 3), -64);
             CheckFFloat("Pow zero", FMath.Pow(9, 0), 1);
@@ -146,16 +148,20 @@ namespace Example
             CheckFFloat("Floor positive", FMath.Floor(new FFloat(1.8)), 1);
             CheckFFloat("Floor negative", FMath.Floor(new FFloat(-1.2)), -2);
             CheckFFloat("Max two", FMath.Max(2, 5), 5);
+            CheckFFloat("Max three", FMath.Max(2, 5, 3), 5);
             CheckFFloat("Max params", FMath.Max(1, 7, 3), 7);
             CheckFFloat("Max empty", FMath.Max(Array.Empty<FFloat>()), 0);
             CheckFFloat("Min two", FMath.Min(2, 5), 2);
+            CheckFFloat("Min three", FMath.Min(2, 5, -3), -3);
             CheckFFloat("Min params", FMath.Min(1, -7, 3), -7);
             CheckFFloat("Min empty", FMath.Min(Array.Empty<FFloat>()), 0);
             CheckFFloat("Truncate positive", FMath.Truncate(new FFloat(1.8)), 1);
             CheckFFloat("Truncate negative", FMath.Truncate(new FFloat(-1.8)), -1);
             CheckFFloat("Abs FFloat", FMath.Abs(new FFloat(-1.8)), 1.8);
             CheckInt("Abs int", FMath.Abs(-11), 11);
+            CheckLong("AbsToLong int.MinValue", FMath.AbsToLong(int.MinValue), 2147483648L);
             CheckFFloat("AbsToFFloat", FMath.AbsToFFloat(-11), 11);
+            CheckFFloat("AbsToFFloat int.MinValue", FMath.AbsToFFloat(int.MinValue), 2147483648.0, 0.5);
 
             FFloat rad1 = (FFloat)1.57075;
             FFloat rad2 = (FFloat)32.415926;
@@ -178,6 +184,9 @@ namespace Example
             CheckFFloat("Acos clamp low", FMath.Acos(-2), Math.PI, MathTolerance);
             CheckFFloat("Atan", FMath.Atan(asinValue), Math.Atan(asinValue.Double), MathTolerance);
             CheckFFloat("Atan expand overload", FMath.Atan(asinValue, 24), Math.Atan(asinValue.Double), MathTolerance);
+            FFloat atanExpandValue = new FFloat(0.5);
+            CheckBool("Atan expand count affects result", FMath.Atan(atanExpandValue, 2) != FMath.Atan(atanExpandValue, 12), true);
+            CheckThrows<ArgumentException>("Atan invalid expand count", () => _ = FMath.Atan(asinValue, 0));
             CheckFFloat("Atan2", FMath.Atan2(1, -1), Math.Atan2(1, -1), MathTolerance);
 
             FMath.SinCos(60 * FMath.Deg2Rad, out FFloat sin, out FFloat cos);
@@ -217,6 +226,7 @@ namespace Example
             CheckFFloat("Dot", FVector2.Dot(v, new FVector2(2, -1)), 2);
             CheckVector2("Cross", FVector2.Cross(FVector2.Right, FVector2.Up), 0, 1);
             CheckFFloat("Angle", FVector2.Angle(FVector2.Right, FVector2.Up), Math.PI / 2, MathTolerance);
+            CheckFFloat("Angle zero", FVector2.Angle(FVector2.Zero, FVector2.Up), 0);
             CheckVector2("+", new FVector2(1, 2) + new FVector2(3, 4), 4, 6);
             CheckVector2("-", new FVector2(1, 2) - new FVector2(3, 4), -2, -2);
             CheckVector2("vector * scalar", new FVector2(1, 2) * 3, 3, 6);

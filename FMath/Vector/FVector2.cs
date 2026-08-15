@@ -168,6 +168,9 @@ namespace FixedMath
         /// <returns>返回为弧度值</returns>
         public static FFloat Angle(FVector2 from, FVector2 to)
         {
+            if (from.sqrMagnitude == 0 || to.sqrMagnitude == 0)
+                return FFloat.Zero;
+
             FFloat num = FMath.Sqrt(from.sqrMagnitude * to.sqrMagnitude);
             FFloat num2 = FMath.Clamp(Dot(from, to) / num, -1, 1);
 
