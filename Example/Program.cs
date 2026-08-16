@@ -477,7 +477,55 @@ namespace Example
         {
             Section("FQuaternion");
             FQuaternion quaternion = new FQuaternion(1, 2, 3, 4);
+            FQuaternion rotateZ90 = FQuaternion.AngleAxis(FMath.HalfPI, FVector3.Forward);
+            FQuaternion rotateY90 = FQuaternion.Euler(0, FMath.HalfPI, 0);
+            FQuaternion eulerDegrees = FQuaternion.EulerAngle(30, 45, 60);
+            FQuaternion fromTo = FQuaternion.FromToRotation(FVector3.Right, FVector3.Up);
+            FQuaternion lookForward = FQuaternion.LookRotation(FVector3.Forward, FVector3.Up);
+            FMatrix3x3 rotateZMatrix = rotateZ90.ToMatrix3x3();
+
             CheckString("Constructor callable", quaternion.GetType().Name, nameof(FQuaternion));
+            CheckLongArray("ConvertLongArray", quaternion.ConvertLongArray(), 65536, 131072, 196608, 262144);
+            CheckFFloat("sqrMagnitude", quaternion.sqrMagnitude, 30);
+            CheckFFloat("Magnitude", quaternion.magnitude, Math.Sqrt(30), MathTolerance);
+            CheckVector3("Identity rotate vector", FQuaternion.Identity * FVector3.Right, 1, 0, 0);
+            CheckVector3("AngleAxis rotate z", rotateZ90 * FVector3.Right, 0, 1, 0, MathTolerance);
+            CheckVector3("RotateVector", FQuaternion.RotateVector(rotateZ90, FVector3.Right), 0, 1, 0, MathTolerance);
+            CheckVector3("RotateVector identity", FQuaternion.RotateVector(FQuaternion.Identity, new FVector3(2, 3, 4)), 2, 3, 4, MathTolerance);
+            CheckVector3("Euler rotate y", rotateY90 * FVector3.Forward, 1, 0, 0, MathTolerance);
+            CheckVector3("FromToRotation", fromTo * FVector3.Right, 0, 1, 0, MathTolerance);
+            CheckVector3("LookRotation forward", lookForward * FVector3.Forward, 0, 0, 1, MathTolerance);
+            CheckVector3("LookRotation up", lookForward * FVector3.Up, 0, 1, 0, MathTolerance);
+            CheckVector3("ToMatrix3x3", rotateZMatrix * FVector3.Right, 0, 1, 0, MathTolerance);
+            CheckVector3("ToMatrix4x4", rotateZ90.ToMatrix4x4().MultiplyDirection(FVector3.Right), 0, 1, 0, MathTolerance);
+            CheckBool("FromMatrix3x3 approximately", FQuaternion.Approximately(FQuaternion.FromMatrix3x3(rotateZMatrix), rotateZ90, new FFloat(0.001)), true);
+            CheckVector3("EulerAngle to euler angles", eulerDegrees.ToEulerAngles(), 30, 45, 60, 0.02);
+            CheckVector3("Euler radians", FQuaternion.Euler(FMath.HalfPI, 0, 0).ToEuler(), Math.PI / 2, 0, 0, MathTolerance);
+            CheckVector3("EulerAngles property", eulerDegrees.EulerAngles, 30, 45, 60, 0.02);
+            CheckFFloat("Angle", FQuaternion.Angle(FQuaternion.Identity, rotateZ90), Math.PI / 2, MathTolerance);
+            CheckFFloat("AngleAngle", FQuaternion.AngleAngle(FQuaternion.Identity, rotateZ90), 90, 0.01);
+            CheckFFloat("Dot", FQuaternion.Dot(FQuaternion.Identity, FQuaternion.Identity), 1);
+            CheckBool("Normalize", FQuaternion.Approximately(new FQuaternion(0, 0, 0, 2).Normalized, FQuaternion.Identity, FMath.Epsilon), true);
+            CheckBool("Conjugate", FQuaternion.Conjugate(new FQuaternion(1, 2, 3, 4)) == new FQuaternion(-1, -2, -3, 4), true);
+            CheckBool("Inverse", FQuaternion.Approximately(rotateZ90 * FQuaternion.Inverse(rotateZ90), FQuaternion.Identity, new FFloat(0.001)), true);
+            CheckVector3("Lerp", FQuaternion.Lerp(FQuaternion.Identity, rotateZ90, new FFloat(0.5)) * FVector3.Right, Math.Sqrt(0.5), Math.Sqrt(0.5), 0, MathTolerance);
+            CheckVector3("Slerp", FQuaternion.Slerp(FQuaternion.Identity, rotateZ90, new FFloat(0.5)) * FVector3.Right, Math.Sqrt(0.5), Math.Sqrt(0.5), 0, MathTolerance);
+            CheckVector3("operator multiply", (FQuaternion.AngleAxis(FMath.HalfPI, FVector3.Up) * FQuaternion.AngleAxis(FMath.HalfPI, FVector3.Forward)) * FVector3.Right, 0, 1, 0, MathTolerance);
+            CheckBool("operator +", new FQuaternion(1, 2, 3, 4) + new FQuaternion(2, 3, 4, 5) == new FQuaternion(3, 5, 7, 9), true);
+            CheckBool("operator -", new FQuaternion(1, 2, 3, 4) - new FQuaternion(2, 3, 4, 5) == new FQuaternion(-1, -1, -1, -1), true);
+            CheckBool("operator unary -", -new FQuaternion(1, -2, 3, -4) == new FQuaternion(-1, 2, -3, 4), true);
+            CheckBool("operator scalar", new FQuaternion(1, 2, 3, 4) * 2 == new FQuaternion(2, 4, 6, 8), true);
+            CheckBool("operator scalar left", 2 * new FQuaternion(1, 2, 3, 4) == new FQuaternion(2, 4, 6, 8), true);
+            CheckBool("operator divide", new FQuaternion(2, 4, 6, 8) / 2 == new FQuaternion(1, 2, 3, 4), true);
+            CheckBool("==", new FQuaternion(1, 2, 3, 4) == new FQuaternion(1, 2, 3, 4), true);
+            CheckBool("!=", new FQuaternion(1, 2, 3, 4) != new FQuaternion(1, 2, 3, 5), true);
+            CheckBool("Equals same", new FQuaternion(1, 2, 3, 4).Equals(new FQuaternion(1, 2, 3, 4)), true);
+            CheckBool("Equals null", new FQuaternion(1, 2, 3, 4).Equals(null), false);
+            CheckBool("GetHashCode same", new FQuaternion(1, 2, 3, 4).GetHashCode() == new FQuaternion(1, 2, 3, 4).GetHashCode(), true);
+            CheckString("ToString", new FQuaternion(1, 2, 3, 4).ToString(), "(1,2,3,4)");
+            CheckThrows<InvalidOperationException>("Inverse zero", () => _ = FQuaternion.Inverse(new FQuaternion(0, 0, 0, 0)));
+            CheckThrows<ArgumentException>("LookRotation zero forward", () => _ = FQuaternion.LookRotation(FVector3.Zero, FVector3.Up));
+            CheckThrows<ArgumentException>("LookRotation parallel up", () => _ = FQuaternion.LookRotation(FVector3.Forward, FVector3.Forward));
         }
 
         private static void Section(string title)
