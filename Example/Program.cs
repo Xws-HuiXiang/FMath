@@ -383,11 +383,13 @@ namespace Example
         {
             Section("FMatrix3x3");
             FMatrix3x3 scale3 = FMatrix3x3.Scale(new FVector3(2, 3, 4));
+            FMatrix3x3 normalScale3 = FMatrix3x3.Scale(new FVector3(2, 1, 1));
             CheckVector3("3x3 identity vector", FMatrix3x3.Identity * new FVector3(1, 2, 3), 1, 2, 3);
             CheckVector3("3x3 scale vector", scale3 * new FVector3(1, 2, 3), 2, 6, 12);
             CheckFFloat("3x3 determinant", scale3.Determinant, 24);
             CheckVector3("3x3 inverse", FMatrix3x3.Inverse(scale3) * new FVector3(2, 6, 12), 1, 2, 3, MathTolerance);
             CheckVector3("3x3 rotate z", FMatrix3x3.RotateZ(FMath.HalfPI) * FVector3.Right, 0, 1, 0, MathTolerance);
+            CheckVector3("3x3 transform normal non uniform scale", normalScale3.TransformNormal(new FVector3(1, 1, 0)), 1 / Math.Sqrt(5), 2 / Math.Sqrt(5), 0, MathTolerance);
             CheckFFloat("3x3 transpose", scale3.Transposed.m11, 3);
             CheckFFloat("3x3 indexer", scale3[2, 2], 4);
             CheckVector3("3x3 get row", scale3.GetRow(1), 0, 3, 0);
@@ -406,6 +408,7 @@ namespace Example
             CheckVector3("3x4 inverse", affine.Inversed.MultiplyPoint(new FVector3(3, 5, 7)), 1, 1, 1, MathTolerance);
             CheckVector3("3x4 trs", FMatrix3x4.TRS(new FVector3(1, 2, 3), FMatrix3x3.Identity, new FVector3(2, 3, 4)).MultiplyPoint(new FVector3(1, 1, 1)), 3, 5, 7);
             CheckVector3("3x4 rotate z", FMatrix3x4.RotateZ(FMath.HalfPI).MultiplyVector(FVector3.Right), 0, 1, 0, MathTolerance);
+            CheckVector3("3x4 transform normal non uniform scale", FMatrix3x4.Scale(new FVector3(2, 1, 1)).TransformNormal(new FVector3(1, 1, 0)), 1 / Math.Sqrt(5), 2 / Math.Sqrt(5), 0, MathTolerance);
             CheckFFloat("3x4 indexer", affine[1, 3], 2);
             CheckVector4("3x4 get row", affine.GetRow(0), 2, 0, 0, 1);
             CheckVector3("3x4 get column", affine.GetColumn(3), 1, 2, 3);
@@ -427,6 +430,7 @@ namespace Example
             CheckVector3("4x4 inverse", FMatrix4x4.Inverse(matrix4).MultiplyPoint(new FVector3(3, 5, 7)), 1, 1, 1, MathTolerance);
             CheckVector3("4x4 inverse affine", matrix4.InverseAffine().MultiplyPoint(new FVector3(3, 5, 7)), 1, 1, 1, MathTolerance);
             CheckVector3("4x4 trs", FMatrix4x4.TRS(new FVector3(1, 2, 3), FMatrix3x3.Identity, new FVector3(2, 3, 4)).MultiplyPoint(new FVector3(1, 1, 1)), 3, 5, 7);
+            CheckVector3("4x4 transform normal non uniform scale", FMatrix4x4.Scale(new FVector3(2, 1, 1)).TransformNormal(new FVector3(1, 1, 0)), 1 / Math.Sqrt(5), 2 / Math.Sqrt(5), 0, MathTolerance);
             CheckFFloat("4x4 transpose", matrix4.Transposed.m30, 1);
             CheckFFloat("4x4 indexer", matrix4[2, 3], 3);
             CheckVector4("4x4 get row", matrix4.GetRow(0), 2, 0, 0, 1);
