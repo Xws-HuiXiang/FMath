@@ -16,7 +16,7 @@
 
 1. 在`FFloat`类中，找到`BitMoveCount`常量，修改为需要的数值。
 
-2. 打开`GenerateFMathConsts/RunGenerateFMathConsts.bat`批处理文件，修改`-m`后的数字参数为放大倍数（注意与FMath中的缩放倍率保持一致），比如BitMoveCount为16（2^16），则需要修改为`-m 65536`，保存后运行。
+2. 打开`GenerateFMathConsts/RunGenerateFMathConsts.bat`批处理文件（Mac系统为`GenerateFMathConsts/RunGenerateFMathConsts.sh`shell脚本文件），修改`-m`后的数字参数为放大倍数（注意与FMath中的缩放倍率保持一致），比如BitMoveCount为16（2^16），则需要修改为`-m 65536`，保存后运行。
 
 3. 重新编译FMath库
 
