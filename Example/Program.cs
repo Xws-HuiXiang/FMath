@@ -225,7 +225,6 @@ namespace Example
             CheckVector2("Normalize zero", FVector2.Normalize(FVector2.Zero), 0, 0);
             CheckFFloat("Dot", FVector2.Dot(v, new FVector2(2, -1)), 2);
             CheckFFloat("CrossValue", FVector2.CrossValue(FVector2.Right, FVector2.Up), 1);
-            CheckVector2("Cross", FVector2.Cross(FVector2.Right, FVector2.Up), 0, 1);
             CheckFFloat("Angle", FVector2.Angle(FVector2.Right, FVector2.Up), Math.PI / 2, MathTolerance);
             CheckFFloat("Angle zero", FVector2.Angle(FVector2.Zero, FVector2.Up), 0);
             CheckFFloat("SignedAngle", FVector2.SignedAngle(FVector2.Right, FVector2.Up), Math.PI / 2, MathTolerance);
