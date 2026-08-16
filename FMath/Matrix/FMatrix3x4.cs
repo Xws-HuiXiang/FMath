@@ -257,10 +257,7 @@ namespace FixedMath
         /// <summary>
         /// 逆矩阵
         /// </summary>
-        public FMatrix3x4 Inversed
-        {
-            get { return Inverse(this); }
-        }
+        public readonly FMatrix3x4 Inversed => Inverse(this);
 
         /// <summary>
         /// 计算矩阵的逆矩阵

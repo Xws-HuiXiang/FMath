@@ -173,6 +173,11 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 逆矩阵
+        /// </summary>
+        public readonly FMatrix3x3 Inversed => Inverse(this);
+
+        /// <summary>
         /// 计算矩阵的逆矩阵
         /// </summary>
         /// <param name="matrix"></param>

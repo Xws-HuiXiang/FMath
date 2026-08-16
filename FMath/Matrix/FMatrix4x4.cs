@@ -234,6 +234,11 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 逆矩阵
+        /// </summary>
+        public readonly FMatrix4x4 Inversed => Inverse(this);
+
+        /// <summary>
         /// 计算矩阵的逆矩阵
         /// <para>使用高斯消元算法求逆，在定点数的环境下由于误差累计可能导致误差比较明显</para>
         /// </summary>
@@ -323,16 +328,18 @@ namespace FixedMath
         /// <returns></returns>
         public static FMatrix4x4 InverseAffine(FMatrix4x4 matrix)
         {
+            if (matrix.m30 != 0 || matrix.m31 != 0 || matrix.m32 != 0 || matrix.m33 != FFloat.One)
+                throw new InvalidOperationException("FMatrix4x4矩阵不是仿射矩阵，无法使用仿射矩阵的逆矩阵函数。请改为使用Inverse()方法求逆矩阵");
+
             return FMatrix3x4.Inverse(matrix.ToMatrix3x4()).ToMatrix4x4();
         }
 
         /// <summary>
-        /// 矩阵乘向量
-        /// <para>不考虑平移的方向变换，四维</para>
+        /// 通用齐次向量乘法
         /// </summary>
-        /// <param name="vector">向量</param>
+        /// <param name="vector"></param>
         /// <returns></returns>
-        public FVector4 MultiplyVector(FVector4 vector)
+        public FVector4 Multiply(FVector4 vector)
         {
             return new FVector4(
                 (m00 * vector.x) + (m01 * vector.y) + (m02 * vector.z) + (m03 * vector.w),
@@ -534,7 +541,7 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 构建右手坐标系的透视投影矩阵
+        /// 构建右手坐标系、OpenGL NDC 深度范围 [-1, 1] 的透视投影矩阵
         /// </summary>
         /// <param name="fovY">纵向视野角，单位为弧度</param>
         /// <param name="aspect">宽高比</param>
@@ -563,7 +570,7 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 构建右手坐标系的正交投影矩阵
+        /// 构建右手坐标系、OpenGL NDC 深度范围 [-1, 1] 的正交投影矩阵
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
@@ -574,11 +581,11 @@ namespace FixedMath
         /// <returns></returns>
         public static FMatrix4x4 Orthographic(FFloat left, FFloat right, FFloat bottom, FFloat top, FFloat near, FFloat far)
         {
-            if (right == left)
+            if (FMath.Abs(right - left) <= FMath.Epsilon)
                 throw new ArgumentException("左右平面不能相同");
-            if (top == bottom)
+            if (FMath.Abs(top - bottom) <= FMath.Epsilon)
                 throw new ArgumentException("上下平面不能相同");
-            if (far == near)
+            if (FMath.Abs(far - near) <= FMath.Epsilon)
                 throw new ArgumentException("远近平面不能相同");
 
             FFloat width = right - left;
@@ -709,7 +716,7 @@ namespace FixedMath
         /// <returns></returns>
         public static FVector4 operator *(FMatrix4x4 matrix, FVector4 vector)
         {
-            return matrix.MultiplyVector(vector);
+            return matrix.Multiply(vector);
         }
 
         /// <summary>
