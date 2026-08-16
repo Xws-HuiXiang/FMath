@@ -1,5 +1,4 @@
 ﻿using FixedMath;
-using FixedMath.Vector;
 using System.Globalization;
 
 namespace Example
@@ -23,6 +22,7 @@ namespace Example
             RunFVector2Tests();
             RunFVector3Tests();
             RunFVector4Tests();
+            RunFMatrixTests();
             RunFQuaternionTests();
 
             Console.WriteLine();
@@ -377,6 +377,96 @@ namespace Example
             CheckBool("Equals null", new FVector4(1, 2, 3, 4).Equals(null), false);
             CheckBool("GetHashCode same", new FVector4(1, 2, 3, 4).GetHashCode() == new FVector4(1, 2, 3, 4).GetHashCode(), true);
             CheckString("ToString", new FVector4(1, 2, 3, 4).ToString(), "(1,2,3,4)");
+        }
+
+        private static void RunFMatrixTests()
+        {
+            Section("FMatrix3x3");
+            FMatrix3x3 scale3 = FMatrix3x3.Scale(new FVector3(2, 3, 4));
+            CheckVector3("3x3 identity vector", FMatrix3x3.Identity * new FVector3(1, 2, 3), 1, 2, 3);
+            CheckVector3("3x3 scale vector", scale3 * new FVector3(1, 2, 3), 2, 6, 12);
+            CheckFFloat("3x3 determinant", scale3.Determinant, 24);
+            CheckVector3("3x3 inverse", FMatrix3x3.Inverse(scale3) * new FVector3(2, 6, 12), 1, 2, 3, MathTolerance);
+            CheckVector3("3x3 rotate z", FMatrix3x3.RotateZ(FMath.HalfPI) * FVector3.Right, 0, 1, 0, MathTolerance);
+            CheckFFloat("3x3 transpose", scale3.Transposed.m11, 3);
+            CheckFFloat("3x3 indexer", scale3[2, 2], 4);
+            CheckVector3("3x3 get row", scale3.GetRow(1), 0, 3, 0);
+            CheckVector3("3x3 get column", scale3.GetColumn(2), 0, 0, 4);
+            CheckBool("3x3 approximately", FMatrix3x3.Approximately(scale3, scale3 + (FMatrix3x3.Identity * FMath.Epsilon), FMath.Epsilon), true);
+            CheckBool("3x3 equality", FMatrix3x3.Identity == FMatrix3x3.Identity, true);
+            CheckThrows<InvalidOperationException>("3x3 inverse singular", () => _ = FMatrix3x3.Inverse(FMatrix3x3.Zero));
+
+            Section("FMatrix3x4");
+            FMatrix3x4 translate3x4 = FMatrix3x4.Translate(new FVector3(1, 2, 3));
+            FMatrix3x4 affineScale = FMatrix3x4.Scale(new FVector3(2, 3, 4));
+            FMatrix3x4 affine = translate3x4 * affineScale;
+            CheckVector3("3x4 transform point", affine.MultiplyPoint(new FVector3(1, 1, 1)), 3, 5, 7);
+            CheckVector3("3x4 transform vector", affine.MultiplyVector(new FVector3(1, 1, 1)), 2, 3, 4);
+            CheckVector3("3x4 operator point", affine * new FVector3(1, 1, 1), 3, 5, 7);
+            CheckVector3("3x4 inverse", affine.Inversed.MultiplyPoint(new FVector3(3, 5, 7)), 1, 1, 1, MathTolerance);
+            CheckVector3("3x4 trs", FMatrix3x4.TRS(new FVector3(1, 2, 3), FMatrix3x3.Identity, new FVector3(2, 3, 4)).MultiplyPoint(new FVector3(1, 1, 1)), 3, 5, 7);
+            CheckVector3("3x4 rotate z", FMatrix3x4.RotateZ(FMath.HalfPI).MultiplyVector(FVector3.Right), 0, 1, 0, MathTolerance);
+            CheckFFloat("3x4 indexer", affine[1, 3], 2);
+            CheckVector4("3x4 get row", affine.GetRow(0), 2, 0, 0, 1);
+            CheckVector3("3x4 get column", affine.GetColumn(3), 1, 2, 3);
+            CheckBool("3x4 approximately", FMatrix3x4.Approximately(affine, affine + new FMatrix3x4(0, 0, 0, FMath.Epsilon, 0, 0, 0, 0, 0, 0, 0, 0), FMath.Epsilon), true);
+            CheckBool("3x4 equality", FMatrix3x4.Identity == FMatrix3x4.Identity, true);
+
+            Section("FMatrix4x4");
+            FMatrix4x4 matrix4 = affine.ToMatrix4x4();
+            FMatrix4x4 viewIdentity = FMatrix4x4.LookAt(FVector3.Zero, FVector3.Back, FVector3.Up);
+            FMatrix4x4 viewTranslated = FMatrix4x4.LookAt(new FVector3(0, 0, 10), FVector3.Zero, FVector3.Up);
+            FMatrix4x4 perspective = FMatrix4x4.Perspective(FMath.HalfPI, 1, 1, 101);
+            FMatrix4x4 orthographic = FMatrix4x4.Orthographic(-1, 1, -2, 2, 1, 101);
+            CheckVector3("4x4 multiply point", matrix4.MultiplyPoint(new FVector3(1, 1, 1)), 3, 5, 7);
+            CheckVector3("4x4 multiply point 3x4", matrix4.MultiplyPoint3x4(new FVector3(1, 1, 1)), 3, 5, 7);
+            CheckVector3("4x4 multiply direction", matrix4.MultiplyDirection(new FVector3(1, 1, 1)), 2, 3, 4);
+            CheckVector4("4x4 multiply vector4", matrix4 * new FVector4(1, 1, 1, 1), 3, 5, 7, 1);
+            CheckVector3("4x4 operator point", matrix4 * new FVector3(1, 1, 1), 3, 5, 7);
+            CheckFFloat("4x4 determinant", matrix4.Determinant, 24);
+            CheckVector3("4x4 inverse", FMatrix4x4.Inverse(matrix4).MultiplyPoint(new FVector3(3, 5, 7)), 1, 1, 1, MathTolerance);
+            CheckVector3("4x4 inverse affine", matrix4.InverseAffine().MultiplyPoint(new FVector3(3, 5, 7)), 1, 1, 1, MathTolerance);
+            CheckVector3("4x4 trs", FMatrix4x4.TRS(new FVector3(1, 2, 3), FMatrix3x3.Identity, new FVector3(2, 3, 4)).MultiplyPoint(new FVector3(1, 1, 1)), 3, 5, 7);
+            CheckFFloat("4x4 transpose", matrix4.Transposed.m30, 1);
+            CheckFFloat("4x4 indexer", matrix4[2, 3], 3);
+            CheckVector4("4x4 get row", matrix4.GetRow(0), 2, 0, 0, 1);
+            CheckVector4("4x4 get column", matrix4.GetColumn(3), 1, 2, 3, 1);
+            CheckBool("4x4 lookat identity", FMatrix4x4.Approximately(viewIdentity, FMatrix4x4.Identity, new FFloat(0.001)), true);
+            CheckVector3("4x4 lookat point", viewTranslated.MultiplyPoint(FVector3.Zero), 0, 0, -10, MathTolerance);
+            CheckFFloat("4x4 perspective m00", perspective.m00, 1, MathTolerance);
+            CheckFFloat("4x4 perspective m22", perspective.m22, -1.02, MathTolerance);
+            CheckFFloat("4x4 perspective m23", perspective.m23, -2.02, MathTolerance);
+            CheckFFloat("4x4 perspective m32", perspective.m32, -1);
+            CheckFFloat("4x4 orthographic m00", orthographic.m00, 1);
+            CheckFFloat("4x4 orthographic m11", orthographic.m11, 0.5);
+            CheckFFloat("4x4 orthographic m22", orthographic.m22, -0.02, MathTolerance);
+            CheckFFloat("4x4 orthographic m23", orthographic.m23, -1.02, MathTolerance);
+            CheckBool("4x4 ortho alias", FMatrix4x4.Approximately(orthographic, FMatrix4x4.Ortho(-1, 1, -2, 2, 1, 101), FMath.Epsilon), true);
+            CheckBool("4x4 approximately", FMatrix4x4.Approximately(matrix4, matrix4 + new FMatrix4x4(0, 0, 0, FMath.Epsilon, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), FMath.Epsilon), true);
+            CheckBool("4x4 equality", FMatrix4x4.Identity == FMatrix4x4.Identity, true);
+            CheckThrows<InvalidOperationException>("4x4 inverse singular", () => _ = FMatrix4x4.Inverse(FMatrix4x4.Zero));
+            CheckThrows<InvalidOperationException>("4x4 inverse affine non affine", () => _ = perspective.InverseAffine());
+            CheckThrows<ArgumentException>("4x4 lookat same point", () => _ = FMatrix4x4.LookAt(FVector3.Zero, FVector3.Zero, FVector3.Up));
+            CheckThrows<ArgumentException>("4x4 lookat invalid up", () => _ = FMatrix4x4.LookAt(FVector3.Zero, FVector3.Back, FVector3.Back));
+            CheckThrows<ArgumentOutOfRangeException>("4x4 perspective invalid fov", () => _ = FMatrix4x4.Perspective(FMath.PI, 1, 1, 10));
+            CheckThrows<ArgumentOutOfRangeException>("4x4 perspective invalid aspect", () => _ = FMatrix4x4.Perspective(FMath.HalfPI, 0, 1, 10));
+            CheckThrows<ArgumentException>("4x4 orthographic invalid width", () => _ = FMatrix4x4.Orthographic(1, 1, -1, 1, 1, 10));
+
+            Section("FMatrix");
+            FMatrix genericA = new FMatrix(2, 2, 1, 2, 3, 4);
+            FMatrix genericB = new FMatrix(2, 2, 5, 6, 7, 8);
+            FMatrix genericAdd = genericA + genericB;
+            FMatrix genericMul = genericA * genericB;
+            FMatrix genericNear = new FMatrix(2, 2, FFloat.One + FMath.Epsilon, 2, 3, 4);
+            CheckFFloat("generic add", genericAdd[1, 1], 12);
+            CheckFFloat("generic multiply 00", genericMul[0, 0], 19);
+            CheckFFloat("generic multiply 11", genericMul[1, 1], 50);
+            CheckFFloat("generic transpose", genericA.Transposed()[1, 0], 2);
+            CheckFFloat("generic identity", (FMatrix.Identity(2) * genericA)[1, 1], 4);
+            CheckFFloat("generic get row", genericA.GetRow(1)[0], 3);
+            CheckFFloat("generic get column", genericA.GetColumn(1)[0], 2);
+            CheckBool("generic approximately", FMatrix.Approximately(genericA, genericNear, FMath.Epsilon), true);
+            CheckThrows<ArgumentException>("generic size mismatch", () => _ = genericA * new FMatrix(3, 1));
         }
 
         private static void RunFQuaternionTests()
