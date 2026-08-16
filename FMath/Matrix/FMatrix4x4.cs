@@ -328,8 +328,9 @@ namespace FixedMath
 
         /// <summary>
         /// 矩阵乘向量
+        /// <para>不考虑平移的方向变换，四维</para>
         /// </summary>
-        /// <param name="vector"></param>
+        /// <param name="vector">向量</param>
         /// <returns></returns>
         public FVector4 MultiplyVector(FVector4 vector)
         {
@@ -341,7 +342,9 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 矩阵乘点
+        /// 矩阵乘点坐标
+        /// <para>处理完整的4x4矩阵，会计算w分量</para>
+        /// <para>也就是用一个完整的4x4矩阵变换一个点</para>
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
@@ -364,6 +367,7 @@ namespace FixedMath
 
         /// <summary>
         /// 4x4矩阵与3x4矩阵相乘
+        /// <para>只处理3x4仿射矩阵，不处理齐次坐标的透视除法</para>
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
@@ -377,6 +381,7 @@ namespace FixedMath
 
         /// <summary>
         /// 矩阵与向量方向相乘
+        /// <para>不考虑平移的方向变换</para>
         /// </summary>
         /// <param name="direction"></param>
         /// <returns></returns>
