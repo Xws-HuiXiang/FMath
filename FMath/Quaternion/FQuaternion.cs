@@ -284,6 +284,7 @@ namespace FixedMath
             FFloat cosXCosY = 1 - (2 * ((q.x * q.x) + (q.y * q.y)));
             FFloat x = FMath.Atan2(sinXCosY, cosXCosY);
 
+            /*
             FFloat sinY = 2 * ((q.w * q.y) - (q.z * q.x));
             FFloat y;
             if (sinY >= 1)
@@ -292,6 +293,9 @@ namespace FixedMath
                 y = -FMath.HalfPI;
             else
                 y = FMath.Asin(sinY);
+            */
+            FFloat sinY = FMath.Clamp(2 * ((q.w * q.y) - (q.z * q.x)), -1, 1);
+            FFloat y = FMath.Asin(sinY);
 
             FFloat sinZCosY = 2 * ((q.w * q.z) + (q.x * q.y));
             FFloat cosZCosY = 1 - (2 * ((q.y * q.y) + (q.z * q.z)));
@@ -412,6 +416,8 @@ namespace FixedMath
             if (trace > 0)
             {
                 FFloat s = FMath.Sqrt(trace + 1) * 2;
+                if (s <= FMath.Epsilon)
+                    throw new System.ArgumentException($"必须为有效的定点数旋转矩阵才能用于构建定点数四元数。尝试用于构建定点数四元数的旋转矩阵为：{matrix}", nameof(matrix));
                 result = new FQuaternion(
                     (matrix.m21 - matrix.m12) / s,
                     (matrix.m02 - matrix.m20) / s,
@@ -451,6 +457,7 @@ namespace FixedMath
 
         /// <summary>
         /// 通过旋转矩阵构建四元数
+        /// <para>从4x4旋转矩阵构建定点数四元数，矩阵左上角必须为纯旋转矩阵，不应包含缩放</para>
         /// </summary>
         /// <param name="matrix"></param>
         /// <returns></returns>
@@ -609,11 +616,32 @@ namespace FixedMath
         /// <returns></returns>
         public static bool Approximately(FQuaternion left, FQuaternion right, FFloat tolerance)
         {
-            return
+            //因为 q  = (0, 0, 0, 1) 和 -q = (0, 0, 0,-1) 表示完全相同的旋转
+            //所以四元数近乎相同的判断需要做两次运算
+            bool same =
                 FMath.Abs(left.x - right.x) <= tolerance &&
                 FMath.Abs(left.y - right.y) <= tolerance &&
                 FMath.Abs(left.z - right.z) <= tolerance &&
                 FMath.Abs(left.w - right.w) <= tolerance;
+
+            bool opposite =
+                FMath.Abs(left.x + right.x) <= tolerance &&
+                FMath.Abs(left.y + right.y) <= tolerance &&
+                FMath.Abs(left.z + right.z) <= tolerance &&
+                FMath.Abs(left.w + right.w) <= tolerance;
+
+            return same || opposite;
+        }
+
+        /// <summary>
+        /// 将向量旋转四元数的角度
+        /// </summary>
+        /// <param name="quaternion">需要旋转的角度</param>
+        /// <param name="vector">被旋转的向量</param>
+        /// <returns></returns>
+        public static FVector3 RotateVector(FQuaternion quaternion, FVector3 vector)
+        {
+            return quaternion * vector;
         }
 
         #region 运算符重载
@@ -716,6 +744,7 @@ namespace FixedMath
 
         /// <summary>
         /// 判断四元数相等
+        /// <para>判断四元数四个分量是否完全相等</para>
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
