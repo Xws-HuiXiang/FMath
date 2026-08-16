@@ -220,6 +220,17 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 变换法线
+        /// <para>法线需要使用旋转缩放部分的逆转置进行变换，才能正确处理非均匀缩放</para>
+        /// </summary>
+        /// <param name="normal"></param>
+        /// <returns></returns>
+        public FVector3 TransformNormal(FVector3 normal)
+        {
+            return RotationScale.TransformNormal(normal);
+        }
+
+        /// <summary>
         /// 获取指定行
         /// </summary>
         /// <param name="row"></param>

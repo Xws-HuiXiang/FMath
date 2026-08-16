@@ -1,5 +1,4 @@
 ﻿using System;
-using FixedMath.Vector;
 
 namespace FixedMath
 {
@@ -398,6 +397,20 @@ namespace FixedMath
                 (m00 * direction.x) + (m01 * direction.y) + (m02 * direction.z),
                 (m10 * direction.x) + (m11 * direction.y) + (m12 * direction.z),
                 (m20 * direction.x) + (m21 * direction.y) + (m22 * direction.z));
+        }
+
+        /// <summary>
+        /// 变换法线
+        /// <para>法线需要使用矩阵左上角3x3部分的逆转置进行变换，才能正确处理非均匀缩放</para>
+        /// </summary>
+        /// <param name="normal"></param>
+        /// <returns></returns>
+        public FVector3 TransformNormal(FVector3 normal)
+        {
+            return new FMatrix3x3(
+                m00, m01, m02,
+                m10, m11, m12,
+                m20, m21, m22).TransformNormal(normal);
         }
 
         /// <summary>

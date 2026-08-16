@@ -217,6 +217,23 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 变换法线
+        /// <para>法线需要使用矩阵的逆转置进行变换，才能正确处理非均匀缩放</para>
+        /// </summary>
+        /// <param name="normal"></param>
+        /// <returns></returns>
+        public FVector3 TransformNormal(FVector3 normal)
+        {
+            FMatrix3x3 inverse = Inverse(this);
+            FVector3 result = new FVector3(
+                (inverse.m00 * normal.x) + (inverse.m10 * normal.y) + (inverse.m20 * normal.z),
+                (inverse.m01 * normal.x) + (inverse.m11 * normal.y) + (inverse.m21 * normal.z),
+                (inverse.m02 * normal.x) + (inverse.m12 * normal.y) + (inverse.m22 * normal.z));
+
+            return FVector3.Normalize(result);
+        }
+
+        /// <summary>
         /// 获取指定行
         /// </summary>
         /// <param name="row"></param>
