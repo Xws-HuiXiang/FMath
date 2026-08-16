@@ -12,12 +12,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
 
   <ItemGroup>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>C:\UnityHub\Unity Install\2021.3.21f1c1\Editor\Data\Managed\UnityEngine\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Matrix\" />
   </ItemGroup>
 
