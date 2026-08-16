@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace FixedMath.Vector
+namespace FixedMath
 {
     /// <summary>
     /// 定点数四维向量
