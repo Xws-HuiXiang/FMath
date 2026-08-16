@@ -139,6 +139,38 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 获取指定行
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        public FFloat[] GetRow(int row)
+        {
+            CheckIndex(row, 0);
+            FFloat[] result = new FFloat[ColumnCount];
+
+            for (int column = 0; column < ColumnCount; column++)
+                result[column] = this[row, column];
+
+            return result;
+        }
+
+        /// <summary>
+        /// 获取指定列
+        /// </summary>
+        /// <param name="column"></param>
+        /// <returns></returns>
+        public FFloat[] GetColumn(int column)
+        {
+            CheckIndex(0, column);
+            FFloat[] result = new FFloat[RowCount];
+
+            for (int row = 0; row < RowCount; row++)
+                result[row] = this[row, column];
+
+            return result;
+        }
+
+        /// <summary>
         /// 计算指定矩阵的转置矩阵
         /// </summary>
         /// <param name="matrix"></param>
@@ -248,6 +280,26 @@ namespace FixedMath
         public static FMatrix operator *(FFloat value, FMatrix matrix)
         {
             return matrix * value;
+        }
+
+        /// <summary>
+        /// 判断两个矩阵是否近似相等
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <param name="tolerance"></param>
+        /// <returns></returns>
+        public static bool Approximately(FMatrix left, FMatrix right, FFloat tolerance)
+        {
+            CheckSameSize(left, right);
+
+            for (int i = 0; i < left.values.Length; i++)
+            {
+                if (FMath.Abs(left.values[i] - right.values[i]) > tolerance)
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>

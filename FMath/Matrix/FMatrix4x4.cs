@@ -235,6 +235,7 @@ namespace FixedMath
 
         /// <summary>
         /// 计算矩阵的逆矩阵
+        /// <para>使用高斯消元算法求逆，在定点数的环境下由于误差累计可能导致误差比较明显</para>
         /// </summary>
         /// <param name="matrix"></param>
         /// <returns></returns>
@@ -266,7 +267,7 @@ namespace FixedMath
                     }
                 }
 
-                if (pivotAbs == 0)
+                if (pivotAbs <= FMath.Epsilon)
                     throw new InvalidOperationException("矩阵不可逆");
 
                 if (pivotRow != pivot)
@@ -305,6 +306,27 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 计算仿射矩阵的逆矩阵
+        /// <para>如果矩阵最后一行不是(0,0,0,1)，则会抛出异常</para>
+        /// </summary>
+        /// <returns></returns>
+        public FMatrix4x4 InverseAffine()
+        {
+            return InverseAffine(this);
+        }
+
+        /// <summary>
+        /// 计算仿射矩阵的逆矩阵
+        /// <para>如果矩阵最后一行不是(0,0,0,1)，则会抛出异常</para>
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public static FMatrix4x4 InverseAffine(FMatrix4x4 matrix)
+        {
+            return FMatrix3x4.Inverse(matrix.ToMatrix3x4()).ToMatrix4x4();
+        }
+
+        /// <summary>
         /// 矩阵乘向量
         /// </summary>
         /// <param name="vector"></param>
@@ -331,7 +353,7 @@ namespace FixedMath
             FFloat z = (m20 * point.x) + (m21 * point.y) + (m22 * point.z) + m23;
             FFloat w = (m30 * point.x) + (m31 * point.y) + (m32 * point.z) + m33;
 
-            if (w == 0)
+            if (FMath.Abs(w) <= FMath.Epsilon)
                 throw new DivideByZeroException();
 
             if (w != 1)
@@ -367,6 +389,42 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 获取指定行
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        public FVector4 GetRow(int row)
+        {
+            switch (row)
+            {
+                case 0: return new FVector4(m00, m01, m02, m03);
+                case 1: return new FVector4(m10, m11, m12, m13);
+                case 2: return new FVector4(m20, m21, m22, m23);
+                case 3: return new FVector4(m30, m31, m32, m33);
+                default: throw new IndexOutOfRangeException();
+            }
+        }
+
+        /// <summary>
+        /// 获取指定列
+        /// </summary>
+        /// <param name="column"></param>
+        /// <returns></returns>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        public FVector4 GetColumn(int column)
+        {
+            switch (column)
+            {
+                case 0: return new FVector4(m00, m10, m20, m30);
+                case 1: return new FVector4(m01, m11, m21, m31);
+                case 2: return new FVector4(m02, m12, m22, m32);
+                case 3: return new FVector4(m03, m13, m23, m33);
+                default: throw new IndexOutOfRangeException();
+            }
+        }
+
+        /// <summary>
         /// 转为3x4仿射矩阵
         /// </summary>
         /// <returns></returns>
@@ -383,7 +441,7 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 
+        /// 构建变换矩阵
         /// </summary>
         /// <param name="translation"></param>
         /// <returns></returns>
@@ -393,7 +451,7 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 
+        /// 构建缩放矩阵
         /// </summary>
         /// <param name="scale"></param>
         /// <returns></returns>
@@ -403,7 +461,7 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 
+        /// 构建绕x轴旋转的矩阵
         /// </summary>
         /// <param name="radians"></param>
         /// <returns></returns>
@@ -413,7 +471,7 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 
+        /// 构建绕y轴旋转的矩阵
         /// </summary>
         /// <param name="radians"></param>
         /// <returns></returns>
@@ -423,7 +481,7 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 
+        /// 构建绕z轴旋转的矩阵
         /// </summary>
         /// <param name="radians"></param>
         /// <returns></returns>
@@ -433,7 +491,7 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 
+        /// 构建平移、旋转和缩放的矩阵
         /// </summary>
         /// <param name="translation"></param>
         /// <param name="rotation"></param>
@@ -442,6 +500,122 @@ namespace FixedMath
         public static FMatrix4x4 TRS(FVector3 translation, FMatrix3x3 rotation, FVector3 scale)
         {
             return FMatrix3x4.TRS(translation, rotation, scale).ToMatrix4x4();
+        }
+
+        /// <summary>
+        /// 构建右手坐标系的View矩阵
+        /// </summary>
+        /// <param name="eye">观察点</param>
+        /// <param name="target">观察目标</param>
+        /// <param name="up">向上方向</param>
+        /// <returns></returns>
+        public static FMatrix4x4 LookAt(FVector3 eye, FVector3 target, FVector3 up)
+        {
+            FVector3 zAxis = FVector3.Normalize(eye - target);
+            if (zAxis.sqrMagnitude == 0)
+                throw new ArgumentException("观察点不能与观察目标重合", nameof(target));
+
+            FVector3 xAxis = FVector3.Normalize(FVector3.Cross(up, zAxis));
+            if (xAxis.sqrMagnitude == 0)
+                throw new ArgumentException("up方向不能与观察方向平行", nameof(up));
+
+            FVector3 yAxis = FVector3.Cross(zAxis, xAxis);
+
+            return new FMatrix4x4(
+                xAxis.x, xAxis.y, xAxis.z, -FVector3.Dot(xAxis, eye),
+                yAxis.x, yAxis.y, yAxis.z, -FVector3.Dot(yAxis, eye),
+                zAxis.x, zAxis.y, zAxis.z, -FVector3.Dot(zAxis, eye),
+                0, 0, 0, 1);
+        }
+
+        /// <summary>
+        /// 构建右手坐标系的透视投影矩阵
+        /// </summary>
+        /// <param name="fovY">纵向视野角，单位为弧度</param>
+        /// <param name="aspect">宽高比</param>
+        /// <param name="near">近裁剪面距离</param>
+        /// <param name="far">远裁剪面距离</param>
+        /// <returns></returns>
+        public static FMatrix4x4 Perspective(FFloat fovY, FFloat aspect, FFloat near, FFloat far)
+        {
+            if (fovY <= 0 || fovY >= FMath.PI)
+                throw new ArgumentOutOfRangeException(nameof(fovY));
+            if (aspect <= 0)
+                throw new ArgumentOutOfRangeException(nameof(aspect));
+            if (near <= 0)
+                throw new ArgumentOutOfRangeException(nameof(near));
+            if (far <= near)
+                throw new ArgumentOutOfRangeException(nameof(far));
+
+            FFloat f = FFloat.One / FMath.Tan(fovY / 2);
+            FFloat range = near - far;
+
+            return new FMatrix4x4(
+                f / aspect, 0, 0, 0,
+                0, f, 0, 0,
+                0, 0, (far + near) / range, (2 * far * near) / range,
+                0, 0, -1, 0);
+        }
+
+        /// <summary>
+        /// 构建右手坐标系的正交投影矩阵
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <param name="bottom"></param>
+        /// <param name="top"></param>
+        /// <param name="near"></param>
+        /// <param name="far"></param>
+        /// <returns></returns>
+        public static FMatrix4x4 Orthographic(FFloat left, FFloat right, FFloat bottom, FFloat top, FFloat near, FFloat far)
+        {
+            if (right == left)
+                throw new ArgumentException("左右平面不能相同");
+            if (top == bottom)
+                throw new ArgumentException("上下平面不能相同");
+            if (far == near)
+                throw new ArgumentException("远近平面不能相同");
+
+            FFloat width = right - left;
+            FFloat height = top - bottom;
+            FFloat depth = far - near;
+
+            return new FMatrix4x4(
+                2 / width, 0, 0, -(right + left) / width,
+                0, 2 / height, 0, -(top + bottom) / height,
+                0, 0, -2 / depth, -(far + near) / depth,
+                0, 0, 0, 1);
+        }
+
+        /// <summary>
+        /// 构建右手坐标系的正交投影矩阵
+        /// </summary>
+        /// <param name="width">视口宽度</param>
+        /// <param name="height">视口高度</param>
+        /// <param name="near">近裁剪面距离</param>
+        /// <param name="far">远裁剪面距离</param>
+        /// <returns></returns>
+        public static FMatrix4x4 Orthographic(FFloat width, FFloat height, FFloat near, FFloat far)
+        {
+            FFloat halfWidth = width / 2;
+            FFloat halfHeight = height / 2;
+
+            return Orthographic(-halfWidth, halfWidth, -halfHeight, halfHeight, near, far);
+        }
+
+        /// <summary>
+        /// 构建右手坐标系的正交投影矩阵
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <param name="bottom"></param>
+        /// <param name="top"></param>
+        /// <param name="near"></param>
+        /// <param name="far"></param>
+        /// <returns></returns>
+        public static FMatrix4x4 Ortho(FFloat left, FFloat right, FFloat bottom, FFloat top, FFloat near, FFloat far)
+        {
+            return Orthographic(left, right, bottom, top, near, far);
         }
 
         /// <summary>
@@ -542,6 +716,34 @@ namespace FixedMath
         public static FVector3 operator *(FMatrix4x4 matrix, FVector3 point)
         {
             return matrix.MultiplyPoint(point);
+        }
+
+        /// <summary>
+        /// 判断两个矩阵是否近似相等
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <param name="tolerance"></param>
+        /// <returns></returns>
+        public static bool Approximately(FMatrix4x4 left, FMatrix4x4 right, FFloat tolerance)
+        {
+            return
+                FMath.Abs(left.m00 - right.m00) <= tolerance &&
+                FMath.Abs(left.m01 - right.m01) <= tolerance &&
+                FMath.Abs(left.m02 - right.m02) <= tolerance &&
+                FMath.Abs(left.m03 - right.m03) <= tolerance &&
+                FMath.Abs(left.m10 - right.m10) <= tolerance &&
+                FMath.Abs(left.m11 - right.m11) <= tolerance &&
+                FMath.Abs(left.m12 - right.m12) <= tolerance &&
+                FMath.Abs(left.m13 - right.m13) <= tolerance &&
+                FMath.Abs(left.m20 - right.m20) <= tolerance &&
+                FMath.Abs(left.m21 - right.m21) <= tolerance &&
+                FMath.Abs(left.m22 - right.m22) <= tolerance &&
+                FMath.Abs(left.m23 - right.m23) <= tolerance &&
+                FMath.Abs(left.m30 - right.m30) <= tolerance &&
+                FMath.Abs(left.m31 - right.m31) <= tolerance &&
+                FMath.Abs(left.m32 - right.m32) <= tolerance &&
+                FMath.Abs(left.m33 - right.m33) <= tolerance;
         }
 
         /// <summary>

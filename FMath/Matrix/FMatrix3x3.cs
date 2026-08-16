@@ -181,7 +181,7 @@ namespace FixedMath
         public static FMatrix3x3 Inverse(FMatrix3x3 matrix)
         {
             FFloat det = matrix.Determinant;
-            if (det == 0)
+            if (FMath.Abs(det) <= FMath.Epsilon)
                 throw new InvalidOperationException("矩阵不可逆");
 
             FFloat invDet = FFloat.One / det;
@@ -209,6 +209,40 @@ namespace FixedMath
                 (m00 * vector.x) + (m01 * vector.y) + (m02 * vector.z),
                 (m10 * vector.x) + (m11 * vector.y) + (m12 * vector.z),
                 (m20 * vector.x) + (m21 * vector.y) + (m22 * vector.z));
+        }
+
+        /// <summary>
+        /// 获取指定行
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        public FVector3 GetRow(int row)
+        {
+            switch (row)
+            {
+                case 0: return new FVector3(m00, m01, m02);
+                case 1: return new FVector3(m10, m11, m12);
+                case 2: return new FVector3(m20, m21, m22);
+                default: throw new IndexOutOfRangeException();
+            }
+        }
+
+        /// <summary>
+        /// 获取指定列
+        /// </summary>
+        /// <param name="column"></param>
+        /// <returns></returns>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        public FVector3 GetColumn(int column)
+        {
+            switch (column)
+            {
+                case 0: return new FVector3(m00, m10, m20);
+                case 1: return new FVector3(m01, m11, m21);
+                case 2: return new FVector3(m02, m12, m22);
+                default: throw new IndexOutOfRangeException();
+            }
         }
 
         /// <summary>
@@ -351,6 +385,27 @@ namespace FixedMath
         public static FMatrix3x3 operator *(FFloat value, FMatrix3x3 matrix)
         {
             return matrix * value;
+        }
+
+        /// <summary>
+        /// 判断两个矩阵是否近似相等
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <param name="tolerance"></param>
+        /// <returns></returns>
+        public static bool Approximately(FMatrix3x3 left, FMatrix3x3 right, FFloat tolerance)
+        {
+            return
+                FMath.Abs(left.m00 - right.m00) <= tolerance &&
+                FMath.Abs(left.m01 - right.m01) <= tolerance &&
+                FMath.Abs(left.m02 - right.m02) <= tolerance &&
+                FMath.Abs(left.m10 - right.m10) <= tolerance &&
+                FMath.Abs(left.m11 - right.m11) <= tolerance &&
+                FMath.Abs(left.m12 - right.m12) <= tolerance &&
+                FMath.Abs(left.m20 - right.m20) <= tolerance &&
+                FMath.Abs(left.m21 - right.m21) <= tolerance &&
+                FMath.Abs(left.m22 - right.m22) <= tolerance;
         }
 
         /// <summary>
