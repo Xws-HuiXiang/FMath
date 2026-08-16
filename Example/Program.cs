@@ -215,8 +215,8 @@ namespace Example
             CheckLongArray("ConvertLongArray", v.ConvertLongArray(), 3 * FFloat.MULTIPLER_FACTOR, 4 * FFloat.MULTIPLER_FACTOR);
             CheckFFloat("sqrMagnitude", v.sqrMagnitude, 25);
             CheckFFloat("SqrMagnitude", FVector2.SqrMagnitude(v), 25);
-            CheckFFloat("Magnitude", v.Magnitude, 5);
-            CheckFFloat("GetMagnitude", FVector2.GetMagnitude(v), 5);
+            CheckFFloat("Magnitude", v.magnitude, 5);
+            CheckFFloat("GetMagnitude", FVector2.Magnitude(v), 5);
             CheckVector2("normalized", v.Normalized, 0.6, 0.8, MathTolerance);
             FVector2 mutable = v;
             mutable.Normalize();
@@ -279,8 +279,8 @@ namespace Example
             CheckLongArray("ConvertLongArray", v.ConvertLongArray(), 2 * FFloat.MULTIPLER_FACTOR, 3 * FFloat.MULTIPLER_FACTOR, 6 * FFloat.MULTIPLER_FACTOR);
             CheckFFloat("sqrMagnitude", v.sqrMagnitude, 49);
             CheckFFloat("SqrMagnitude", FVector3.SqrMagnitude(v), 49);
-            CheckFFloat("Magnitude", v.Magnitude, 7);
-            CheckFFloat("GetMagnitude", FVector3.GetMagnitude(v), 7);
+            CheckFFloat("Magnitude", v.magnitude, 7);
+            CheckFFloat("GetMagnitude", FVector3.Magnitude(v), 7);
             CheckVector3("normalized", v.Normalized, 2.0 / 7, 3.0 / 7, 6.0 / 7, MathTolerance);
             FVector3 mutable = v;
             mutable.Normalize();
@@ -336,8 +336,8 @@ namespace Example
             CheckLongArray("ConvertLongArray", v.ConvertLongArray(), 1 * FFloat.MULTIPLER_FACTOR, 2 * FFloat.MULTIPLER_FACTOR, 3 * FFloat.MULTIPLER_FACTOR, 4 * FFloat.MULTIPLER_FACTOR);
             CheckFFloat("sqrMagnitude", v.sqrMagnitude, 30);
             CheckFFloat("SqrMagnitude", FVector4.SqrMagnitude(v), 30);
-            CheckFFloat("Magnitude", v.Magnitude, Math.Sqrt(30), MathTolerance);
-            CheckFFloat("GetMagnitude", FVector4.GetMagnitude(v), Math.Sqrt(30), MathTolerance);
+            CheckFFloat("Magnitude", v.magnitude, Math.Sqrt(30), MathTolerance);
+            CheckFFloat("GetMagnitude", FVector4.Magnitude(v), Math.Sqrt(30), MathTolerance);
             CheckVector4("normalized", v.normalized, 1 / Math.Sqrt(30), 2 / Math.Sqrt(30), 3 / Math.Sqrt(30), 4 / Math.Sqrt(30), MathTolerance);
             FVector4 mutable = v;
             mutable.Normalize();

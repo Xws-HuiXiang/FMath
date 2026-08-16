@@ -65,10 +65,17 @@ namespace FixedMath
             return new long[] { x.RawValue, y.RawValue };
         }
 
+#pragma warning disable IDE1006 // 命名样式
         /// <summary>
         /// 向量长度的平方
         /// </summary>
-        public FFloat sqrMagnitude { get { return x * x + y * y; } }
+        public readonly FFloat sqrMagnitude { get { return x * x + y * y; } }
+
+        /// <summary>
+        /// 向量长度
+        /// </summary>
+        public FFloat magnitude { get { return FMath.Sqrt(this.sqrMagnitude); } }
+#pragma warning restore IDE1006 // 命名样式
 
         /// <summary>
         /// 计算向量长度的平方
@@ -85,15 +92,10 @@ namespace FixedMath
         /// </summary>
         /// <param name="vector"></param>
         /// <returns></returns>
-        public static FFloat GetMagnitude(FVector2 vector)
+        public static FFloat Magnitude(FVector2 vector)
         {
             return FMath.Sqrt(vector.sqrMagnitude);
         }
-
-        /// <summary>
-        /// 向量长度
-        /// </summary>
-        public FFloat Magnitude { get { return FMath.Sqrt(this.sqrMagnitude); } }
 
         /// <summary>
         /// 返回当前向量的单位向量
@@ -102,9 +104,9 @@ namespace FixedMath
         {
             get
             {
-                if (this.Magnitude > 0)
+                if (this.magnitude > 0)
                 {
-                    FFloat rate = FFloat.One / this.Magnitude;
+                    FFloat rate = FFloat.One / this.magnitude;
 
                     return new FVector2(x * rate, y * rate);
                 }
@@ -120,9 +122,11 @@ namespace FixedMath
         /// </summary>
         public void Normalize()
         {
-            if (this.Magnitude > 0)
+            FFloat sqrMagnitude = this.sqrMagnitude;
+            if (sqrMagnitude > FFloat.Zero)
             {
-                FFloat rate = FFloat.One / this.Magnitude;
+                FFloat magnitude = FMath.Sqrt(sqrMagnitude);
+                FFloat rate = FFloat.One / magnitude;
 
                 x *= rate;
                 y *= rate;
@@ -136,9 +140,9 @@ namespace FixedMath
         /// <returns></returns>
         public static FVector2 Normalize(FVector2 vector)
         {
-            if (vector.Magnitude > 0)
+            if (vector.sqrMagnitude > FFloat.Zero)
             {
-                FFloat rate = FFloat.One / vector.Magnitude;
+                FFloat rate = FFloat.One / vector.magnitude;
 
                 return new FVector2(vector.x * rate, vector.y * rate);
             }
@@ -168,17 +172,6 @@ namespace FixedMath
         public static FFloat CrossValue(FVector2 left, FVector2 right)
         {
             return left.x * right.y - left.y * right.x;
-        }
-
-        /// <summary>
-        /// 向量叉乘。结果为两个向量所在平面的法线向量
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public static FVector2 Cross(FVector2 left, FVector2 right)
-        {
-            return new FVector2(0, CrossValue(left, right));
         }
 
         /// <summary>
@@ -220,7 +213,7 @@ namespace FixedMath
         /// <returns></returns>
         public static FFloat Distance(FVector2 left, FVector2 right)
         {
-            return (left - right).Magnitude;
+            return (left - right).magnitude;
         }
 
         /// <summary>
@@ -406,6 +399,18 @@ namespace FixedMath
         public static FVector2 Perpendicular(FVector2 vector)
         {
             return new FVector2(-vector.y, vector.x);
+        }
+
+        /// <summary>
+        /// 判断两个二维向量是否足够接近
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="tolerance"></param>
+        /// <returns></returns>
+        public static bool Approximately(FVector2 a, FVector2 b, FFloat tolerance)
+        {
+            return (FMath.Abs(a.x - b.x) <= tolerance) && (FMath.Abs(a.y - b.y) <= tolerance);
         }
 
         #region 运算符重载

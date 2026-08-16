@@ -61,10 +61,17 @@ namespace FixedMath.Vector
             return new long[] { x.RawValue, y.RawValue, z.RawValue, w.RawValue };
         }
 
+#pragma warning disable IDE1006 // 命名样式
         /// <summary>
         /// 向量长度的平方
         /// </summary>
         public FFloat sqrMagnitude { get { return x * x + y * y + z * z + w * w; } }
+
+        /// <summary>
+        /// 向量长度
+        /// </summary>
+        public FFloat magnitude { get { return FMath.Sqrt(Dot(this, this)); } }
+#pragma warning restore IDE1006 // 命名样式
 
         /// <summary>
         /// 计算向量长度的平方
@@ -81,15 +88,10 @@ namespace FixedMath.Vector
         /// </summary>
         /// <param name="vector"></param>
         /// <returns></returns>
-        public static FFloat GetMagnitude(FVector4 vector)
+        public static FFloat Magnitude(FVector4 vector)
         {
             return FMath.Sqrt(vector.sqrMagnitude);
         }
-
-        /// <summary>
-        /// 向量长度
-        /// </summary>
-        public FFloat Magnitude { get { return FMath.Sqrt(Dot(this, this)); } }
 
         /// <summary>
         /// 返回当前向量的单位向量
@@ -98,9 +100,9 @@ namespace FixedMath.Vector
         {
             get
             {
-                if (this.Magnitude > 0)
+                if (this.magnitude > 0)
                 {
-                    FFloat rate = FFloat.One / this.Magnitude;
+                    FFloat rate = FFloat.One / this.magnitude;
 
                     return new FVector4(x * rate, y * rate, z * rate, w * rate);
                 }
@@ -116,9 +118,9 @@ namespace FixedMath.Vector
         /// </summary>
         public void Normalize()
         {
-            if (this.Magnitude > 0)
+            if (this.magnitude > 0)
             {
-                FFloat rate = FFloat.One / this.Magnitude;
+                FFloat rate = FFloat.One / this.magnitude;
 
                 x *= rate;
                 y *= rate;
@@ -134,9 +136,9 @@ namespace FixedMath.Vector
         /// <returns></returns>
         public static FVector4 Normalize(FVector4 vector)
         {
-            if (vector.Magnitude > 0)
+            if (vector.magnitude > 0)
             {
-                FFloat rate = FFloat.One / vector.Magnitude;
+                FFloat rate = FFloat.One / vector.magnitude;
 
                 return new FVector4(vector.x * rate, vector.y * rate, vector.z * rate, vector.w * rate);
             }
@@ -182,7 +184,7 @@ namespace FixedMath.Vector
         /// <returns>返回为弧度值</returns>
         public static FFloat Angle(FVector4 from, FVector4 to)
         {
-            FFloat mod = from.Magnitude * to.Magnitude;
+            FFloat mod = from.magnitude * to.magnitude;
             if (mod == 0) return FFloat.Zero;
 
             FFloat value = FMath.Clamp(Dot(from, to) / mod, -1, 1);
@@ -198,7 +200,7 @@ namespace FixedMath.Vector
         /// <returns></returns>
         public static FFloat Distance(FVector4 left, FVector4 right)
         {
-            return (left - right).Magnitude;
+            return (left - right).magnitude;
         }
 
         /// <summary>
@@ -382,6 +384,21 @@ namespace FixedMath.Vector
             FFloat c1, FFloat c2, FFloat c3)
         {
             return a1 * (b2 * c3 - b3 * c2) - a2 * (b1 * c3 - b3 * c1) + a3 * (b1 * c2 - b2 * c1);
+        }
+
+        /// <summary>
+        /// 判断两个四维向量是否足够接近
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="tolerance"></param>
+        /// <returns></returns>
+        public static bool Approximately(FVector4 a, FVector4 b, FFloat tolerance)
+        {
+            return (FMath.Abs(a.x - b.x) <= tolerance) &&
+                (FMath.Abs(a.y - b.y) <= tolerance) &&
+                (FMath.Abs(a.z - b.z) <= tolerance) &&
+                (FMath.Abs(a.w - b.w) <= tolerance);
         }
 
         #region 运算符重载

@@ -9,6 +9,10 @@ namespace FixedMath
     public static class FMath
     {
         /// <summary>
+        /// 极小值
+        /// </summary>
+        public readonly static FFloat Epsilon = FFloat.FromRaw(5);
+        /// <summary>
         /// π
         /// </summary>
         public readonly static FFloat PI = FFloat.FromRaw(205887);

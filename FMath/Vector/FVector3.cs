@@ -103,10 +103,17 @@ namespace FixedMath
             return new long[] { x.RawValue, y.RawValue, z.RawValue };
         }
 
+#pragma warning disable IDE1006 // 命名样式
         /// <summary>
         /// 向量长度的平方
         /// </summary>
         public FFloat sqrMagnitude { get { return x * x + y * y + z * z; } }
+
+        /// <summary>
+        /// 向量长度
+        /// </summary>
+        public FFloat magnitude { get { return FMath.Sqrt(this.sqrMagnitude); } }
+#pragma warning restore IDE1006 // 命名样式
 
         /// <summary>
         /// 计算向量长度的平方
@@ -123,15 +130,10 @@ namespace FixedMath
         /// </summary>
         /// <param name="vector"></param>
         /// <returns></returns>
-        public static FFloat GetMagnitude(FVector3 vector)
+        public static FFloat Magnitude(FVector3 vector)
         {
             return FMath.Sqrt(vector.sqrMagnitude);
         }
-
-        /// <summary>
-        /// 向量长度
-        /// </summary>
-        public FFloat Magnitude { get { return FMath.Sqrt(this.sqrMagnitude); } }
 
         /// <summary>
         /// 返回当前向量的单位向量
@@ -140,9 +142,9 @@ namespace FixedMath
         {
             get
             {
-                if (this.Magnitude > 0)
+                if (this.magnitude > 0)
                 {
-                    FFloat rate = FFloat.One / this.Magnitude;
+                    FFloat rate = FFloat.One / this.magnitude;
 
                     return new FVector3(x * rate, y * rate, z * rate);
                 }
@@ -158,9 +160,9 @@ namespace FixedMath
         /// </summary>
         public void Normalize()
         {
-            if(this.Magnitude > 0)
+            if(this.magnitude > 0)
             {
-                FFloat rate = FFloat.One / this.Magnitude;
+                FFloat rate = FFloat.One / this.magnitude;
 
                 x *= rate;
                 y *= rate;
@@ -175,9 +177,9 @@ namespace FixedMath
         /// <returns></returns>
         public static FVector3 Normalize(FVector3 vector)
         {
-            if (vector.Magnitude > 0)
+            if (vector.magnitude > 0)
             {
-                FFloat rate = FFloat.One / vector.Magnitude;
+                FFloat rate = FFloat.One / vector.magnitude;
 
                 return new FVector3(vector.x * rate, vector.y * rate, vector.z * rate);
             }
@@ -217,7 +219,7 @@ namespace FixedMath
         /// <returns>返回为弧度值</returns>
         public static FFloat Angle(FVector3 from, FVector3 to)
         {
-            FFloat mod = from.Magnitude * to.Magnitude;
+            FFloat mod = from.magnitude * to.magnitude;
             if (mod == 0) return FFloat.Zero;
             FFloat dot = Dot(from, to);
             FFloat value = FMath.Clamp(dot / mod, -1, 1);
@@ -238,7 +240,7 @@ namespace FixedMath
                 return FFloat.Zero;
 
             FVector3 cross = Cross(from, to);
-            FFloat angle = FMath.Atan2(cross.Magnitude, Dot(from, to));
+            FFloat angle = FMath.Atan2(cross.magnitude, Dot(from, to));
 
             return Dot(axis, cross) < 0 ? -angle : angle;
         }
@@ -251,7 +253,7 @@ namespace FixedMath
         /// <returns></returns>
         public static FFloat Distance(FVector3 left, FVector3 right)
         {
-            return (left - right).Magnitude;
+            return (left - right).magnitude;
         }
 
         /// <summary>
@@ -433,11 +435,25 @@ namespace FixedMath
         /// 计算反射向量
         /// </summary>
         /// <param name="vector"></param>
-        /// <param name="normal"></param>
+        /// <param name="normal">必须为单位向量</param>
         /// <returns></returns>
         public static FVector3 Reflect(FVector3 vector, FVector3 normal)
         {
             return vector - normal * (2 * Dot(vector, normal));
+        }
+
+        /// <summary>
+        /// 判断两个三维向量是否足够接近
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="tolerance"></param>
+        /// <returns></returns>
+        public static bool Approximately(FVector3 a, FVector3 b, FFloat tolerance)
+        {
+            return (FMath.Abs(a.x - b.x) <= tolerance) &&
+                (FMath.Abs(a.y - b.y) <= tolerance) &&
+                (FMath.Abs(a.z - b.z) <= tolerance);
         }
 
         #region 运算符重载
