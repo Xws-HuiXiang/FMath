@@ -69,15 +69,15 @@ namespace FixedMath
         ];
 
         /// <summary>
-        /// 返回指定数字的平方根
-        /// <para>使用整数二分开方</para>
+        /// 返回指定数字的方根
+        /// <para>使用整数二分法开方</para>
         /// </summary>
         /// <param name="value">需要开方的值</param>
         /// <returns></returns>
         public static FFloat Sqrt(FFloat value)
         {
             if (value == FFloat.Zero) return 0;
-            if (value < 0) throw new ArgumentException("尝试对负数开平方");
+            if (value < 0) throw new ArgumentException("尝试对负数开方");
 
             FInt128 target = FInt128.FromInt64(value.RawValue) << FFloat.BitMoveCount;
             ulong low = 0;
@@ -108,6 +108,13 @@ namespace FixedMath
             return FFloat.FromRaw((long)result);
         }
 
+        /// <summary>
+        /// value的平方值与target的值做比较
+        /// <para>如果left小于right，则返回-1；若left大于right，则返回1；否则返回0</para>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
         private static int CompareSquare(ulong value, FInt128 target)
         {
             FInt128 square = FInt128.MultiplyUnsigned(value, value);
@@ -121,6 +128,7 @@ namespace FixedMath
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
+        /// <exception cref="DivideByZeroException"></exception>
         public static FFloat Pow(FFloat x, int y)
         {
             //任何一个数都可以表示为2^n的和，所以循环n次就可以变成循环n的二进制位数次
@@ -167,9 +175,9 @@ namespace FixedMath
                 throw new ArgumentException("对数换底时的新底值必须不为1");
 
             //先换底，换成（以e为底value的对数 除以 以e为底newBase的对数）
+            //分别计算自然对数求结果
             FFloat v1 = LogE(value);
             FFloat v2 = LogE(newBase);
-            //分别计算自然对数求结果
 
             return v1 / v2;
         }
@@ -403,7 +411,7 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 返回指定数字的绝对值
+        /// 返回指定数字的绝对值，结果为long类型
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -416,7 +424,7 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 返回指定数字的绝对值
+        /// 返回指定数字的绝对值，结果为定点数
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -425,6 +433,12 @@ namespace FixedMath
             return FFloat.FromRaw(AbsToLong(value) << FFloat.BitMoveCount);
         }
 
+        /// <summary>
+        /// 弧度标准化，用于将任意给定的弧度值限制在 (-π, π] 区间内
+        /// <para>区间选择(-π, π]是考虑与C#的数学库对齐</para>
+        /// </summary>
+        /// <param name="radian">弧度值</param>
+        /// <returns></returns>
         private static FFloat NormalizeRadiansSigned(FFloat radian)
         {
             radian %= PI2;
@@ -437,25 +451,32 @@ namespace FixedMath
             return radian;
         }
 
-        private static void CordicRotate(FFloat angle, out FFloat sin, out FFloat cos)
+        /// <summary>
+        /// CORDIC 算法实现。用于计算给定弧度 radians 的正弦和余弦值
+        /// </summary>
+        /// <param name="radians">弧度值</param>
+        /// <param name="sin">改弧度值对应的sin值</param>
+        /// <param name="cos">改弧度值对应的cos值</param>
+        private static void CordicRotate(FFloat radians, out FFloat sin, out FFloat cos)
         {
             FFloat sign = FFloat.One;
-            angle = NormalizeRadiansSigned(angle);
+            //先将弧度归一化
+            radians = NormalizeRadiansSigned(radians);
 
-            if (angle > HalfPI)
+            if (radians > HalfPI)
             {
-                angle -= PI;
+                radians -= PI;
                 sign = -1;
             }
-            else if (angle < -HalfPI)
+            else if (radians < -HalfPI)
             {
-                angle += PI;
+                radians += PI;
                 sign = -1;
             }
 
             FFloat x = CordicK;
             FFloat y = FFloat.Zero;
-            FFloat z = angle;
+            FFloat z = radians;
 
             for (int i = 0; i < CordicAtanTable.Length; i++)
             {
@@ -480,6 +501,12 @@ namespace FixedMath
             cos = x * sign;
         }
 
+        /// <summary>
+        /// CORDIC ATan2 算法实现。用于计算二维向量 (x, y) 与 X 轴正方向的夹角（即方位角），结果以弧度表示，范围在 [-π, π] 之间
+        /// </summary>
+        /// <param name="y"></param>
+        /// <param name="x"></param>
+        /// <returns></returns>
         private static FFloat CordicAtan2(FFloat y, FFloat x)
         {
             if (x == 0)
@@ -615,10 +642,10 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 反正弦函数
+        /// 反正弦函数，结果为弧度
         /// <para>注意：当输入值大于1时，将返回表中最后一个值；当输入值小于-1时，将返回表中第一个值</para>
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">输入范围-1~1</param>
         /// <returns></returns>
         public static FFloat Asin(FFloat value)
         {
@@ -635,10 +662,10 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 反余弦函数
+        /// 反余弦函数，结果为弧度
         /// <para>注意：当输入值大于1时，将返回表中最后一个值；当输入值小于-1时，将返回表中第一个值</para>
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">输入范围-1~1</param>
         /// <returns></returns>
         public static FFloat Acos(FFloat value)
         {
@@ -655,10 +682,10 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 反正切函数
+        /// 反正切函数，结果为弧度
         /// <para>使用CORDIC算法获取计算结果</para>
         /// </summary>
-        /// <param name="value">值</param>
+        /// <param name="value">任意实数</param>
         /// <returns></returns>
         public static FFloat Atan(FFloat value)
         {
@@ -666,7 +693,7 @@ namespace FixedMath
         }
 
         /// <summary>
-        /// 反正切函数
+        /// 反正切函数，结果为弧度
         /// <para>函数将使用反正切函数的泰勒展开式计算结果。这种计算方式比较昂贵，但精度比较好</para>
         /// </summary>
         /// <param name="value">值</param>
@@ -714,12 +741,12 @@ namespace FixedMath
         /// <summary>
         /// 同时计算正弦和余弦
         /// </summary>
-        /// <param name="theta">弧度值</param>
+        /// <param name="radians">弧度值</param>
         /// <param name="sin"></param>
         /// <param name="cos"></param>
-        public static void SinCos(FFloat theta, out FFloat sin, out FFloat cos)
+        public static void SinCos(FFloat radians, out FFloat sin, out FFloat cos)
         {
-            CordicRotate(theta, out sin, out cos);
+            CordicRotate(radians, out sin, out cos);
         }
 
         /// <summary>

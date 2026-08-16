@@ -29,6 +29,9 @@ namespace FixedMath
         /// </summary>
         public const long MULTIPLER_FACTOR = 1L << BitMoveCount;
 
+        /// <summary>
+        /// 定点数实际值
+        /// </summary>
         private long rawValue;
         /// <summary>
         /// 定点数实际值
@@ -114,9 +117,7 @@ namespace FixedMath
 
                 // C# % 对负数结果也是负数。
                 // 统一转换成绝对的小数部分。
-                long absRemainder = remainder >= 0
-                    ? remainder
-                    : -remainder;
+                long absRemainder = remainder >= 0 ? remainder : -remainder;
 
                 long half = MULTIPLER_FACTOR / 2;
 
