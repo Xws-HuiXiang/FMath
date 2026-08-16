@@ -47,6 +47,10 @@ namespace FixedMath
         /// 角度转弧度的常量：π/180
         /// </summary>
         public readonly static FFloat Deg2Rad = FFloat.FromRaw(1144);
+        /// <summary>
+        /// 四元数球面插值退化为线性插值的点乘阈值
+        /// </summary>
+        public readonly static FFloat QuaternionSlerpLinearThreshold = FFloat.FromRaw(65503);
 
         private readonly static FFloat Ln2 = FFloat.FromRaw(45426);
         private readonly static FFloat CordicK = FFloat.FromRaw(39797);

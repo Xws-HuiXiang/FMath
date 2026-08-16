@@ -134,6 +134,7 @@ namespace GenerateFMathConsts
             long eRaw = ToRaw(Math.E, multiplier);
             long rad2DegRaw = ToRaw(180.0 / Math.PI, multiplier);
             long deg2RadRaw = ToRaw(Math.PI / 180.0, multiplier);
+            long quaternionSlerpLinearThresholdRaw = ToRaw(0.9995, multiplier);
             long ln2Raw = ToRaw(Math.Log(2.0), multiplier);
             long cordicKRaw = ToRaw(GetCordicK(), multiplier);
             long[] cordicAtanTable = GetCordicAtanTable(multiplier);
@@ -188,6 +189,10 @@ namespace GenerateFMathConsts
             builder.AppendLine("        /// 角度转弧度的常量：π/180");
             builder.AppendLine("        /// </summary>");
             builder.AppendLine($"        public readonly static FFloat Deg2Rad = FFloat.FromRaw({deg2RadRaw.ToString(CultureInfo.InvariantCulture)});");
+            builder.AppendLine("        /// <summary>");
+            builder.AppendLine("        /// 四元数球面插值退化为线性插值的点乘阈值");
+            builder.AppendLine("        /// </summary>");
+            builder.AppendLine($"        public readonly static FFloat QuaternionSlerpLinearThreshold = FFloat.FromRaw({quaternionSlerpLinearThresholdRaw.ToString(CultureInfo.InvariantCulture)});");
             builder.AppendLine();
             builder.AppendLine($"        private readonly static FFloat Ln2 = FFloat.FromRaw({ln2Raw.ToString(CultureInfo.InvariantCulture)});");
             builder.AppendLine($"        private readonly static FFloat CordicK = FFloat.FromRaw({cordicKRaw.ToString(CultureInfo.InvariantCulture)});");

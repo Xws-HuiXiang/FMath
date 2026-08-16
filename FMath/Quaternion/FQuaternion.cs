@@ -593,7 +593,7 @@ namespace FixedMath
             }
 
             dot = FMath.Clamp(dot, 0, 1);
-            if (dot > new FFloat(0.9995))
+            if (dot > FMath.QuaternionSlerpLinearThreshold)
                 return LerpUnclamped(from, to, t);
 
             FFloat theta0 = FMath.Acos(dot);
