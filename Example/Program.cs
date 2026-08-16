@@ -1,4 +1,4 @@
-using FixedMath;
+﻿using FixedMath;
 using FixedMath.Vector;
 using System.Globalization;
 
