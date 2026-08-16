@@ -81,6 +81,16 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 计算向量长度
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public static FFloat GetMagnitude(FVector2 vector)
+        {
+            return FMath.Sqrt(vector.sqrMagnitude);
+        }
+
+        /// <summary>
         /// 向量长度
         /// </summary>
         public FFloat Magnitude { get { return FMath.Sqrt(this.sqrMagnitude); } }
@@ -88,7 +98,7 @@ namespace FixedMath
         /// <summary>
         /// 返回当前向量的单位向量
         /// </summary>
-        public FVector2 normalized
+        public FVector2 Normalized
         {
             get
             {
@@ -150,6 +160,17 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 向量叉乘。结果为两个向量所在平面的法线向量长度
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FFloat CrossValue(FVector2 left, FVector2 right)
+        {
+            return left.x * right.y - left.y * right.x;
+        }
+
+        /// <summary>
         /// 向量叉乘。结果为两个向量所在平面的法线向量
         /// </summary>
         /// <param name="left"></param>
@@ -157,7 +178,7 @@ namespace FixedMath
         /// <returns></returns>
         public static FVector2 Cross(FVector2 left, FVector2 right)
         {
-            return new FVector2(0, left.x * right.y - left.y * right.x);
+            return new FVector2(0, CrossValue(left, right));
         }
 
         /// <summary>
@@ -175,6 +196,216 @@ namespace FixedMath
             FFloat num2 = FMath.Clamp(Dot(from, to) / num, -1, 1);
 
             return FMath.Acos(num2);
+        }
+
+        /// <summary>
+        /// 计算两向量有符号夹角（返回弧度值）
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns>返回为弧度值</returns>
+        public static FFloat SignedAngle(FVector2 from, FVector2 to)
+        {
+            if (from.sqrMagnitude == 0 || to.sqrMagnitude == 0)
+                return FFloat.Zero;
+
+            return FMath.Atan2(CrossValue(from, to), Dot(from, to));
+        }
+
+        /// <summary>
+        /// 计算两点距离
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FFloat Distance(FVector2 left, FVector2 right)
+        {
+            return (left - right).Magnitude;
+        }
+
+        /// <summary>
+        /// 计算两点距离的平方
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FFloat SqrDistance(FVector2 left, FVector2 right)
+        {
+            return (left - right).sqrMagnitude;
+        }
+
+        /// <summary>
+        /// 向量加法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector2 Add(FVector2 left, FVector2 right)
+        {
+            return left + right;
+        }
+
+        /// <summary>
+        /// 向量减法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector2 Subtract(FVector2 left, FVector2 right)
+        {
+            return left - right;
+        }
+
+        /// <summary>
+        /// 向量乘法
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FVector2 Multiply(FVector2 vector, FFloat value)
+        {
+            return vector * value;
+        }
+
+        /// <summary>
+        /// 向量除法
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FVector2 Divide(FVector2 vector, FFloat value)
+        {
+            return vector / value;
+        }
+
+        /// <summary>
+        /// 向量线性插值
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static FVector2 Lerp(FVector2 left, FVector2 right, FFloat t)
+        {
+            return LerpUnclamped(left, right, FMath.Clamp(t, 0, 1));
+        }
+
+        /// <summary>
+        /// 向量线性插值
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static FVector2 LerpUnclamped(FVector2 left, FVector2 right, FFloat t)
+        {
+            return left + (right - left) * t;
+        }
+
+        /// <summary>
+        /// 向目标移动指定距离
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="target"></param>
+        /// <param name="maxDistanceDelta"></param>
+        /// <returns></returns>
+        public static FVector2 MoveTowards(FVector2 current, FVector2 target, FFloat maxDistanceDelta)
+        {
+            FVector2 delta = target - current;
+            FFloat sqrDistance = delta.sqrMagnitude;
+            FFloat maxSqrDistance = maxDistanceDelta * maxDistanceDelta;
+
+            if (sqrDistance == 0 || (maxDistanceDelta >= 0 && sqrDistance <= maxSqrDistance))
+                return target;
+
+            return current + delta / FMath.Sqrt(sqrDistance) * maxDistanceDelta;
+        }
+
+        /// <summary>
+        /// 按分量相乘
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector2 Scale(FVector2 left, FVector2 right)
+        {
+            return new FVector2(left.x * right.x, left.y * right.y);
+        }
+
+        /// <summary>
+        /// 按分量取最大值
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector2 Max(FVector2 left, FVector2 right)
+        {
+            return new FVector2(FMath.Max(left.x, right.x), FMath.Max(left.y, right.y));
+        }
+
+        /// <summary>
+        /// 按分量取最小值
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector2 Min(FVector2 left, FVector2 right)
+        {
+            return new FVector2(FMath.Min(left.x, right.x), FMath.Min(left.y, right.y));
+        }
+
+        /// <summary>
+        /// 限制向量长度
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="maxLength"></param>
+        /// <returns></returns>
+        public static FVector2 ClampMagnitude(FVector2 vector, FFloat maxLength)
+        {
+            if (maxLength <= 0)
+                return FVector2.Zero;
+
+            FFloat maxSqrLength = maxLength * maxLength;
+            if (vector.sqrMagnitude <= maxSqrLength)
+                return vector;
+
+            return vector.Normalized * maxLength;
+        }
+
+        /// <summary>
+        /// 计算向量投影
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="onNormal"></param>
+        /// <returns></returns>
+        public static FVector2 Project(FVector2 vector, FVector2 onNormal)
+        {
+            FFloat sqrMagnitude = onNormal.sqrMagnitude;
+            if (sqrMagnitude == 0)
+                return FVector2.Zero;
+
+            return onNormal * (Dot(vector, onNormal) / sqrMagnitude);
+        }
+
+        /// <summary>
+        /// 计算反射向量
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="normal"></param>
+        /// <returns></returns>
+        public static FVector2 Reflect(FVector2 vector, FVector2 normal)
+        {
+            return vector - normal * (2 * Dot(vector, normal));
+        }
+
+        /// <summary>
+        /// 计算垂直向量
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public static FVector2 Perpendicular(FVector2 vector)
+        {
+            return new FVector2(-vector.y, vector.x);
         }
 
         #region 运算符重载

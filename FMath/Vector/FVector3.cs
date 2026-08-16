@@ -119,6 +119,16 @@ namespace FixedMath
         }
 
         /// <summary>
+        /// 计算向量长度
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public static FFloat GetMagnitude(FVector3 vector)
+        {
+            return FMath.Sqrt(vector.sqrMagnitude);
+        }
+
+        /// <summary>
         /// 向量长度
         /// </summary>
         public FFloat Magnitude { get { return FMath.Sqrt(this.sqrMagnitude); } }
@@ -126,7 +136,7 @@ namespace FixedMath
         /// <summary>
         /// 返回当前向量的单位向量
         /// </summary>
-        public FVector3 normalized
+        public FVector3 Normalized
         {
             get
             {
@@ -210,9 +220,224 @@ namespace FixedMath
             FFloat mod = from.Magnitude * to.Magnitude;
             if (mod == 0) return FFloat.Zero;
             FFloat dot = Dot(from, to);
-            FFloat value = dot / mod;
+            FFloat value = FMath.Clamp(dot / mod, -1, 1);
 
             return FMath.Acos(value);
+        }
+
+        /// <summary>
+        /// 计算两向量有符号夹角（返回弧度值）
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="axis"></param>
+        /// <returns>返回为弧度值</returns>
+        public static FFloat SignedAngle(FVector3 from, FVector3 to, FVector3 axis)
+        {
+            if (from.sqrMagnitude == 0 || to.sqrMagnitude == 0 || axis.sqrMagnitude == 0)
+                return FFloat.Zero;
+
+            FVector3 cross = Cross(from, to);
+            FFloat angle = FMath.Atan2(cross.Magnitude, Dot(from, to));
+
+            return Dot(axis, cross) < 0 ? -angle : angle;
+        }
+
+        /// <summary>
+        /// 计算两点距离
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FFloat Distance(FVector3 left, FVector3 right)
+        {
+            return (left - right).Magnitude;
+        }
+
+        /// <summary>
+        /// 计算两点距离的平方
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FFloat SqrDistance(FVector3 left, FVector3 right)
+        {
+            return (left - right).sqrMagnitude;
+        }
+
+        /// <summary>
+        /// 向量加法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector3 Add(FVector3 left, FVector3 right)
+        {
+            return left + right;
+        }
+
+        /// <summary>
+        /// 向量减法
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector3 Subtract(FVector3 left, FVector3 right)
+        {
+            return left - right;
+        }
+
+        /// <summary>
+        /// 向量乘法
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FVector3 Multiply(FVector3 vector, FFloat value)
+        {
+            return vector * value;
+        }
+
+        /// <summary>
+        /// 向量除法
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static FVector3 Divide(FVector3 vector, FFloat value)
+        {
+            return vector / value;
+        }
+
+        /// <summary>
+        /// 向量线性插值
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static FVector3 Lerp(FVector3 left, FVector3 right, FFloat t)
+        {
+            return LerpUnclamped(left, right, FMath.Clamp(t, 0, 1));
+        }
+
+        /// <summary>
+        /// 向量线性插值
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static FVector3 LerpUnclamped(FVector3 left, FVector3 right, FFloat t)
+        {
+            return left + (right - left) * t;
+        }
+
+        /// <summary>
+        /// 向目标移动指定距离
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="target"></param>
+        /// <param name="maxDistanceDelta"></param>
+        /// <returns></returns>
+        public static FVector3 MoveTowards(FVector3 current, FVector3 target, FFloat maxDistanceDelta)
+        {
+            FVector3 delta = target - current;
+            FFloat sqrDistance = delta.sqrMagnitude;
+            FFloat maxSqrDistance = maxDistanceDelta * maxDistanceDelta;
+
+            if (sqrDistance == 0 || (maxDistanceDelta >= 0 && sqrDistance <= maxSqrDistance))
+                return target;
+
+            return current + delta / FMath.Sqrt(sqrDistance) * maxDistanceDelta;
+        }
+
+        /// <summary>
+        /// 按分量相乘
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector3 Scale(FVector3 left, FVector3 right)
+        {
+            return new FVector3(left.x * right.x, left.y * right.y, left.z * right.z);
+        }
+
+        /// <summary>
+        /// 按分量取最大值
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector3 Max(FVector3 left, FVector3 right)
+        {
+            return new FVector3(FMath.Max(left.x, right.x), FMath.Max(left.y, right.y), FMath.Max(left.z, right.z));
+        }
+
+        /// <summary>
+        /// 按分量取最小值
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static FVector3 Min(FVector3 left, FVector3 right)
+        {
+            return new FVector3(FMath.Min(left.x, right.x), FMath.Min(left.y, right.y), FMath.Min(left.z, right.z));
+        }
+
+        /// <summary>
+        /// 限制向量长度
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="maxLength"></param>
+        /// <returns></returns>
+        public static FVector3 ClampMagnitude(FVector3 vector, FFloat maxLength)
+        {
+            if (maxLength <= 0)
+                return FVector3.Zero;
+
+            FFloat maxSqrLength = maxLength * maxLength;
+            if (vector.sqrMagnitude <= maxSqrLength)
+                return vector;
+
+            return vector.Normalized * maxLength;
+        }
+
+        /// <summary>
+        /// 计算向量投影
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="onNormal"></param>
+        /// <returns></returns>
+        public static FVector3 Project(FVector3 vector, FVector3 onNormal)
+        {
+            FFloat sqrMagnitude = onNormal.sqrMagnitude;
+            if (sqrMagnitude == 0)
+                return FVector3.Zero;
+
+            return onNormal * (Dot(vector, onNormal) / sqrMagnitude);
+        }
+
+        /// <summary>
+        /// 计算向量在指定平面上的投影
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="planeNormal"></param>
+        /// <returns></returns>
+        public static FVector3 ProjectOnPlane(FVector3 vector, FVector3 planeNormal)
+        {
+            return vector - Project(vector, planeNormal);
+        }
+
+        /// <summary>
+        /// 计算反射向量
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="normal"></param>
+        /// <returns></returns>
+        public static FVector3 Reflect(FVector3 vector, FVector3 normal)
+        {
+            return vector - normal * (2 * Dot(vector, normal));
         }
 
         #region 运算符重载
