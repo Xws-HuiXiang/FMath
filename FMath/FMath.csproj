@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net8.0;net9.0;net461;net472;net48;net481</TargetFrameworks>
 	<LangVersion>latest</LangVersion>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	<RootNamespace>FixedMath</RootNamespace>
