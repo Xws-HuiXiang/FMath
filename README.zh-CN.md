@@ -1,4 +1,4 @@
-中文 | [English](./READMD.md)
+中文 | [English](./README.md)
 
 # FMath 定点数数学库
 
