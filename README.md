@@ -1,30 +1,36 @@
-# FMath 定点数数学库
+[中文](./README.zh-CN.md) | English
 
-实现大部分基础数学函数按定点数运算；实现向量相关定点数运算；实现矩阵相关定点数运算、四元数相关定点数运算。
+# FMath Fixed-Point Mathematics Library
 
-定点数实现逻辑为扩大指定的倍数（默认为65536），然后使用对应的整数计算。
+FMath implements most fundamental mathematical functions using fixed-point arithmetic, as well as fixed-point operations for vectors, matrices, and quaternions.
 
-旋转相关计算中，使用右手坐标系。
+The fixed-point implementation works by scaling values by a specified factor (65536 by default) and then performing the corresponding calculations using integers.
 
-注意：**浮点数转换为定点浮点数会有精度损失**。
+Rotation-related calculations use a **right-handed coordinate system**.
 
-目标框架为`netstandard2.0`。
+> **Note:** Converting floating-point values to fixed-point values may result in a loss of precision.
 
-使用位运算加速计算。
+Bitwise operations are used to accelerate calculations.
 
-*注：库中所有方法、字段、属性等均有自动注释*
+**All methods, fields, properties, and other members in the library are automatically documented.**
 
-**自行修改缩放倍数的方法：**
+## Changing the Fixed-Point Scale Factor
 
-1. 在`FFloat`类中，找到`BitMoveCount`常量，修改为需要的数值。
+To change the scale factor manually:
 
-2. 打开`GenerateFMathConsts/RunGenerateFMathConsts.bat`批处理文件（Mac系统为`GenerateFMathConsts/RunGenerateFMathConsts.sh`shell脚本文件），修改`-m`后的数字参数为放大倍数（注意与FMath中的缩放倍率保持一致），比如BitMoveCount为16（2^16），则需要修改为`-m 65536`，保存后运行。
+1. In the `FFloat` class, locate the `BitMoveCount` constant and change it to the desired value.
 
-3. 重新编译FMath库
+2. Open the `GenerateFMathConsts/RunGenerateFMathConsts.bat` batch file (or the `GenerateFMathConsts/RunGenerateFMathConsts.sh` shell script on macOS), and change the numeric parameter following `-m` to the desired scale factor. Make sure it matches the scale factor used by FMath.
+   
+   For example, if `BitMoveCount` is `16` (`2^16`), the scale factor is `65536`, so change the parameter to: `-m 65536`. Save the file and run the script.
 
-#### 定点数构造方式
+3. Rebuild the FMath library.
 
-直接构造，且支持隐式转换和显示转换
+4. Note: Because the library uses bitwise operations, the scale factor must be a power of 2.
+
+#### Fixed-Point Construction
+
+Fixed-point values can be constructed directly, with support for both implicit and explicit conversions.
 
 ```C#
 FFloat fromInt = new FFloat(2);
@@ -33,9 +39,9 @@ FFloat explicitDouble = (FFloat)0.7;
 FFloat implicitInt = 6;
 ```
 
-#### 定点数数学库 API
+#### Fixed-Point Mathematics API
 
-主要的类为`FMath`，其中方法名称与`Math`类类似
+The main class is `FMath`, whose method names are similar to those in the standard `Math` class.
 
 ```C#
 FMath.Sqrt(16);
